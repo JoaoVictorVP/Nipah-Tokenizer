@@ -1,0 +1,1 @@
+﻿global using NTokens = NipahTokenizer.ProgressiveList<NipahTokenizer.Token>;

@@ -1,0 +1,12 @@
+/// Value Types
+0 -> Boolean (expects one byte)
+1 -> Integer (expects four bytes)
+2 -> Float (expects four bytes)
+3 -> x64 Integer (expects eight bytes)
+4 -> Double (expects eight bytes)
+5 -> String (expects four bytes specifying length, then, expects that count of bytes)
+
+/// Identifiers
+6 -> Acessor (expects count of STRINGS, then, expect that count of STRINGS)
+7 -> Invoke {Acessor, ARGUMENTS}
+

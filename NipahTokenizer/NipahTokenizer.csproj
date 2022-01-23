@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>NipahTokenizer</PackageId>
+    <Authors>Nipah</Authors>
+    <Product>Nipah Tokenizer</Product>
+    <Description>A strong tokenizer for you needs on C#</Description>
+    <PackageIcon>d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg</PackageIcon>
+    <PackageIconUrl />
+    <PackageReleaseNotes>Primeira e provavelmente única versão</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Version>1.0.1</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\Furude Rika\source\repos\Nipah Tokenizer\NipahTokenizer\NipahTokenizer.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Pictures\d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

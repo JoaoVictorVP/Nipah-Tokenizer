@@ -1,0 +1,361 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NipahTokenizer</name>
+    </assembly>
+    <members>
+        <member name="T:sample">
+            <summary>
+            <b>Pt-BR</b><br/>
+            COMENTÁRIO
+            <br/><b>En-US</b><br/>
+            COMMENTARY
+            </summary>
+        </member>
+        <member name="T:NipahTokenizer.DynamicArray`1">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Uma matrix dinamicamente escalável, que diferentemente de uma lista, não duplica sua capacidade quando demasiados elementos são adicionados a ela
+            <br/><b>En-US</b><br/>
+            A dynamic scalable array, that, differently from a list, not double this capacity when it is reached
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:NipahTokenizer.DynamicArray`1.Count">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Número de elementos presentes na array
+            <br/><b>En-US</b><br/>
+            Number of elements present in the array
+            </summary>
+        </member>
+        <member name="P:NipahTokenizer.DynamicArray`1.Array">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Referência atual ao objeto array interno
+            <br/><b>En-US</b><br/>
+            Current internal array object
+            </summary>
+        </member>
+        <member name="M:NipahTokenizer.DynamicArray`1.Cast``1">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Realiza uma conversão de tipos entre os elementos dessa array
+            <br/><b>En-US</b><br/>
+            Cast elements from this array, into another new array
+            </summary>
+        </member>
+        <member name="M:NipahTokenizer.DynamicArray`1.As``1">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Converte os elementos dessa array, em outra nova array, realizando uma conversão 'As'
+            <br/><b>En-US</b><br/>
+            Cast the elements of this array, into another new array, using the 'As' casting
+            </summary>
+        </member>
+        <member name="M:NipahTokenizer.DynamicArray`1.ForEach(System.Action{`0})">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Itera entre todos os elementos da array, chamando 'iterator' a cada vez
+            <br/><b>En-US</b><br/>
+            Iterates over each element of this array, calling 'iterator' on every element
+            </summary>
+        </member>
+        <member name="M:NipahTokenizer.DynamicArray`1.Add(`0)">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Adiciona um novo elemento para esta array
+            <br/><b>En-US</b><br/>
+            Adds a new element to this array
+            </summary>
+        </member>
+        <member name="M:NipahTokenizer.DynamicArray`1.Remove(`0)">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Remove um elemento desta array
+            <br/><b>En-US</b><br/>
+            Remove's an element from this array
+            </summary>
+        </member>
+        <member name="M:NipahTokenizer.DynamicArray`1.Clear">
+            <summary>
+            <b>Pt-BR</b><br/>
+            Limpa todos os elementos dessa array
+            <br/><b>En-US</b><br/>
+            Clear all the element from this array
+            </summary>
+        </member>
+        <member name="T:NipahTokenizer.Null`1">
+            <summary>
+            A nullable type (any)
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.This">
+            <summary>
+            Return the token that pointer is in
+            </summary>
+            <returns>The this.</returns>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.Last">
+            <summary>
+            Return the last token of list
+            </summary>
+            <returns>The last.</returns>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.Next">
+            <summary>
+            Return a token and advance the pointer
+            </summary>
+            <returns>The next.</returns>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.Next(System.Predicate{`0})">
+            <summary>
+            Return a token and advance the pointer, and continue advancing 
+            while predicate is match
+            </summary>
+            <returns>The next.</returns>
+            <param name="ignoreThis">Ignore this.</param>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.Next(System.Collections.Generic.List{`0})">
+            <summary>
+            Return a token and advance the pointer, storing the result in specified list
+            </summary>
+            <returns>The next.</returns>
+            <param name="toAdd">To add.</param>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.Back">
+            <summary>
+            Return a token and backwards the pointer
+            </summary>
+            <returns>The back.</returns>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.Preview_Next">
+            <summary>
+            Previews the next token without moving pointer
+            </summary>
+            <returns>The next.</returns>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.Preview_Back">
+            <summary>
+            Previews the back token without moving pointer
+            </summary>
+            <returns>The back.</returns>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.PointerNext">
+            <summary>
+            Move's the pointer to the next index
+            </summary>
+        </member>
+        <member name="M:NipahTokenizer.ProgressiveList`1.PointerBack">
+            <summary>
+            Move's the pointer to a back index
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Email">
+            <summary>
+            The email token '@'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Comment">
+            <summary>
+            The comment token '//'.
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.CommentBegin">
+            <summary>
+            The comment begin token '/*'.
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.CommentEnd">
+            <summary>
+            The comment end token '*/'.
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.OpenParenthesis">
+            <summary>
+            The open parenthesis '('
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.CloseParenthesis">
+            <summary>
+            The close parenthesis ')'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.OpenBrackets">
+            <summary>
+            The open brackets '{'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.CloseBrackets">
+            <summary>
+            The close brackets '}'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.OpenSquares">
+            <summary>
+            The open squares '['
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.CloseSquares">
+            <summary>
+            The close squares ']'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.VoidLiteral">
+            <summary>
+            void
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.FalseLiteral">
+            <summary>
+            false
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.StringLiteral">
+            <summary>
+            E.g "Hello World"
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.IntegerLiteral">
+            <summary>
+            E.g 13
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.FloatLiteral">
+            <summary>
+            E.g 0,3 || 0.3
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.NullLiteral">
+            <summary>
+            null
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Plus">
+            <summary>
+            +
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Minus">
+            <summary>
+            -
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Divide">
+            <summary>
+            /
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Multiply">
+            <summary>
+            *
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Bind">
+            <summary>
+            Traditional a '=' b
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Equal">
+            <summary>
+            a == b
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Different">
+            <summary>
+            a != b
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Larger">
+            <summary>
+            a > b
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Lower">
+            <summary>
+            a , b
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.LargerOrEqual">
+            <summary>
+            a >= b
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.LowerOrEqual">
+            <summary>
+            a ,= b
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Descript">
+            <summary>
+            The descript token ':'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.And">
+            <summary>
+            The and token 'AND, e-commercial.e-commercial'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Or">
+            <summary>
+            The or token 'OR, ||'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Rich">
+            <summary>
+            The rich token '$'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Reference">
+            <summary>
+            The reference token 'E-Commercial'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Access">
+            <summary>
+            The access token '->'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.To">
+            <summary>
+            The 'To' token '=>'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Dot">
+            <summary>
+            The dot token '.'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Hashtag">
+            <summary>
+            The hashtag token '#'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.Exclamation">
+            <summary>
+            The exclamation token '!'
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.EOF">
+            <summary>
+            The End Of Line (; \n \r)
+            </summary>
+        </member>
+        <member name="F:NipahTokenizer.TokenType.LineBreak">
+            <summary>
+            The line break (when LineBreakCountAsEOF disabled, then \n will be this)
+            </summary>
+        </member>
+        <member name="T:NipahTokenizer.Tree">
+            <summary>
+            An alias for TreeNode
+            </summary>
+        </member>
+        <member name="T:NipahTokenizer.TreeNode">
+            <summary>
+            The base class for creating trees with C#
+            </summary>
+        </member>
+    </members>
+</doc>
