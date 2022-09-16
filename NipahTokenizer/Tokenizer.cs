@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using S = NipahTokenizer.Separator;
 
 #nullable enable
@@ -108,12 +109,12 @@ namespace NipahTokenizer
 		public event Action<List<SplitItem>>? SplitProcessor;
 		public event Action<Token>? TokenProcessor;
 		public static event SplitProcessor? FinalSplitProcessor;
-		public List<Token> Tokenize(string entry, bool removeLineBreaks = true)
+		public List<Token> Tokenize(string entry, TokenizerOptions options, bool removeLineBreaks = true)
 		{
 			//entry = entry.Replace("\n","");
 			entry = entry.Replace("\r", "");
 			var tokens = new List<Token>();
-			var pieces = SplitString(entry, defaultSeparators);
+			var pieces = SplitString(entry, options);
 			SplitProcessor?.Invoke(pieces);
 			foreach (var piece in pieces)
 			{
@@ -152,84 +153,164 @@ namespace NipahTokenizer
 					token.type = TokenType.Value;
 			});
 		}
-		static S[] defaultSeparators = {
-			new S(' ', false), new S('*'), new S('/'), new S('+'), new S('-'),
-			new S('('), new S(')'), new S('\n'), new S(','), new S(';'),
-			new S('='), new S('{'), new S('}'),
-			new S('['), new S(']'), new S(':'), new S('<'), new S('>'), new S('\t', false),
-			new S('&'), new S('|'), new S('$'), new S('@'), new S('.'), new S('#'),
-			new S('!')
-		};
 
-		// ¬
-
-
-
-		public static List<SplitItem> SplitString(string text, params S[] separatorsArr)
+		static void ProcessPositionAndEOF(char c, ref int position, ref int line, EndOfLine[] eofs)
 		{
-			List<S> separators = new List<S>(separatorsArr);
-			List<SplitItem> list = new List<SplitItem>();
-			string cur = "";
-			Stack<int> opens = new Stack<int>();
-			int count = text.Length;
-			int line = 1;
-			int curEnd = 0;
-			int position = -1;
-			for (int i = 0; i < count; i++)
+            // Controls position and line
+            position++;
+            if (Array.Exists(eofs, x => x.EOF == c))
+            {
+                position = 0;
+                line++;
+            }
+        }
+
+        static void SplitStringEscapedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes)
+		{
+			char c = text[index];
+			if (c is '\\')
 			{
-				var c = text[i];
-				position++;
-				curEnd = position;
-				if (c == '\n')
-				{
-					line++;
-					position = 0;
-					curEnd = 0;
-				}
-				if (special.Contains(c))
-				{
-					list.Add(new SplitItem(c.ToString(), position, line));
+				index++;
+				char n = text[index];
+				string cur;
+				if (n is 'n') cur = "\n";
+				else if (n is 't') cur = "\t";
+				else if (n is 'r') cur = "\r";
+				else cur = n.ToString();
+				var item = new SplitItem(cur, position, line);
+				list.Add(item);
+                ProcessPositionAndEOF(c, ref position, ref line, options.EOFs);
+            }
+			else
+				throw new Exception("Out of scaping context");
+		}
+        static void SplitStringScopedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes)
+		{
+            var scopeDefs = options.Scopes;
+            var eofs = options.EOFs;
+
+            int count = text.Length;
+			var current = new StringBuilder(320);
+
+			int selfIndex = index;
+			for(index = selfIndex; index < count; index++)
+			{
+				var c = text[index];
+
+				current.Append(c);
+				if (current.Length is 1)
 					continue;
-				}
-				var separator = separators.Find(s => s.Char == c);
-				if (separator != null && opens.Count == 0)
+
+				// Check for end of scope
+				foreach (var scoper in scopeDefs)
 				{
-					if (separator.Include)
-						if (!separator.AddSep)
-							cur += c;
-					list.Add(new SplitItem(cur, position, line));
-					if (separator.Include && separator.AddSep)
-						list.Add(new SplitItem(c.ToString(), position, line));
-					cur = "";
-					continue;
-				}
-				if (begins.Contains(c) && (opens.Count > 0 && begins[opens.Peek()] != c || opens.Count == 0))
-				{
-					opens.Push(begins.IndexOf(c));
-					if (ables[opens.Peek()])
-						cur += c;
-					continue;
-				}
-				if (opens.Count == 0)
-				{
-					cur += c;
-				}
-				else
-				{
-					int pop = opens.Peek();
-					char end = ends[pop];
-					bool can = intern[pop];
-					if (can && (c != end || ables[pop]))
-						cur += c;
-					if (c == end)
+					if(scoper.End == c)
 					{
-						opens.Pop();
-					}
+						var item = new SplitItem(current.ToString(), position, line);
+						list.Add(item);
+                        ProcessPositionAndEOF(c, ref position, ref line, eofs);
+						return;
+                    }
 				}
-			}
-			if (cur != "")
-				list.Add(new SplitItem(cur, curEnd, line));
-			list.RemoveAll((obj) => obj == "");
+				// Check for escaping
+				if (c is '\\')
+				{
+					current.Remove(current.Length - 1, 1);
+					SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes);
+				}
+
+                ProcessPositionAndEOF(c, ref position, ref line, eofs);
+            }
+			if(current.Length > 0)
+				list.Add(new(current.ToString(), position, line));
+		}
+		static void SplitStringNormalMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes)
+		{
+            var separators = options.Separators;
+            var scopeDefs = options.Scopes;
+            var eofs = options.EOFs;
+
+            int count = text.Length;
+
+            var current = new StringBuilder(320);
+
+			int selfIndex = index;
+            for (index = selfIndex; index < count; index++)
+            {
+                var c = text[index];
+
+                current.Append(c);
+
+                // Check for separators
+                foreach (var sep in separators)
+                {
+                    var match = sep.Match.Match(current.ToString());
+                    if (match.Success)
+                    {
+                        switch (sep.Include)
+                        {
+                            case IncludeMode.Aggregate:
+                            {
+                                var item = new SplitItem(current.ToString(), position, line);
+                                list.Add(item);
+                                current.Clear();
+                                break;
+                            }
+                            case IncludeMode.Separate:
+                            {
+                                var item = new SplitItem(current.ToString()[..match.Index], (position - match.Length), line);
+                                var sepItem = new SplitItem(match.Value, position, line);
+                                list.Add(item);
+                                list.Add(sepItem);
+								current.Clear();
+                                break;
+                            }
+                            case IncludeMode.None:
+                            {
+                                var item = new SplitItem(current.ToString()[..match.Index], (position - match.Length), line);
+                                list.Add(item);
+                                current.Clear();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                // Check for scopes
+                foreach (var scoper in scopeDefs)
+                {
+					if(scoper.Begin == c)
+					{
+						current.Clear();
+						SplitStringScopedMode(text, ref index, ref position, ref line, options, list, scopes);
+						break;
+					}
+                }
+                // Check for escaping
+                if (c is '\\')
+                {
+                    current.Remove(current.Length - 1, 1);
+                    SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes);
+                }
+
+                ProcessPositionAndEOF(c, ref position, ref line, eofs);
+            }
+            if (current.Length > 0)
+                list.Add(new(current.ToString(), position, line));
+        }
+
+		public static List<SplitItem> SplitString(string text, TokenizerOptions options)
+		{
+			var list = new List<SplitItem>(32);
+
+			int index = 0;
+			int position = 0;
+			int line = 0;
+
+			var scopes = new Stack<long>(32);
+
+			SplitStringNormalMode(text, ref index, ref position, ref line, options, list, scopes);
+
 			ApplyList(list);
 			return list;
 		}
@@ -238,7 +319,7 @@ namespace NipahTokenizer
 		{
 			Queue<SplitItem> tokens = new Queue<SplitItem>(list);
 			list.Clear();
-			SplitItem back = null;
+			SplitItem? back = null;
 			while (tokens.Count > 0)
 			{
 				SplitItem token = tokens.Dequeue();
@@ -374,19 +455,6 @@ namespace NipahTokenizer
 				back = token;
 				list.Add(token);
 			}
-		}
-	}
-	public class Separator
-	{
-		public readonly char Char;
-		public readonly bool Include;
-		public readonly bool AddSep;
-
-		public Separator(char @char, bool include = true, bool addSeparated = true)
-		{
-			Char = @char;
-			Include = include;
-			AddSep = addSeparated;
 		}
 	}
 	public class SplitItem
