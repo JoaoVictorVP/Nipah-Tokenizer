@@ -191,14 +191,14 @@ namespace NipahTokenizer
 					list.Add(new SplitItem(c.ToString(), position, line));
 					continue;
 				}
-				var separator = separators.Find(s => s.separator == c);
+				var separator = separators.Find(s => s.Char == c);
 				if (separator != null && opens.Count == 0)
 				{
-					if (separator.include)
-						if (!separator.addSep)
+					if (separator.Include)
+						if (!separator.AddSep)
 							cur += c;
 					list.Add(new SplitItem(cur, position, line));
-					if (separator.include && separator.addSep)
+					if (separator.Include && separator.AddSep)
 						list.Add(new SplitItem(c.ToString(), position, line));
 					cur = "";
 					continue;
@@ -378,15 +378,15 @@ namespace NipahTokenizer
 	}
 	public class Separator
 	{
-		public char separator;
-		public bool include;
-		public bool addSep;
+		public readonly char Char;
+		public readonly bool Include;
+		public readonly bool AddSep;
 
-		public Separator(char separator, bool include = true, bool addSeparated = true)
+		public Separator(char @char, bool include = true, bool addSeparated = true)
 		{
-			this.separator = separator;
-			this.include = include;
-			addSep = addSeparated;
+			Char = @char;
+			Include = include;
+			AddSep = addSeparated;
 		}
 	}
 	public class SplitItem
