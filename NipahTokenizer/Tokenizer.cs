@@ -115,7 +115,7 @@ namespace NipahTokenizer
 			SplitProcessor?.Invoke(pieces);
 			foreach (var piece in pieces)
 			{
-				var token = Token.build(piece);
+				var token = Token.Build(piece);
 				TokenProcessor?.Invoke(token);
 				tokens.Add(token);
 			}
