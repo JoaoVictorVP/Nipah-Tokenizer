@@ -6,7 +6,7 @@ namespace NipahTokenizer
 {
 	public class Tokenizer
 	{
-		public static bool isValue(TokenType token)
+		public static bool IsValue(TokenType token)
 		{
 			switch (token)
 			{
@@ -19,7 +19,7 @@ namespace NipahTokenizer
 			}
 			return false;
 		}
-		public static bool isValueGross(TokenType token)
+		public static bool IsValueGross(TokenType token)
 		{
 			switch (token)
 			{
@@ -32,7 +32,7 @@ namespace NipahTokenizer
 			}
 			return false;
 		}
-		public static bool isComparisson(TokenType token)
+		public static bool IsComparisson(TokenType token)
 		{
 			switch (token)
 			{
@@ -45,7 +45,7 @@ namespace NipahTokenizer
 			}
 			return false;
 		}
-		public static bool isConditional(TokenType token)
+		public static bool IsConditional(TokenType token)
 		{
 			switch (token)
 			{
@@ -54,7 +54,7 @@ namespace NipahTokenizer
 			}
 			return false;
 		}
-		public static bool isOperator(TokenType token)
+		public static bool IsOperator(TokenType token)
 		{
 			switch (token)
 			{
@@ -67,7 +67,7 @@ namespace NipahTokenizer
 			}
 			return false;
 		}
-		public static bool isMathOperator(TokenType token)
+		public static bool IsMathOperator(TokenType token)
 		{
 			switch (token)
 			{
@@ -100,23 +100,23 @@ namespace NipahTokenizer
 		{
 			true, true, true, true, true, true
 		};
-		public static Tokenizer single => _single;
-		static Tokenizer _single = new Tokenizer();
-		public event Action<List<Token>> tokensProcessor;
-		public event Action<List<SplitItem>> splitProcessor;
-		public event Action<Token> tokenProcessor;
-		public static event SplitProcessor finalSplitProcessor;
+		public static Tokenizer Single => _single;
+		static readonly Tokenizer _single = new Tokenizer();
+		public event Action<List<Token>> TokensProcessor;
+		public event Action<List<SplitItem>> SplitProcessor;
+		public event Action<Token> TokenProcessor;
+		public static event SplitProcessor FinalSplitProcessor;
 		public List<Token> Tokenize(string entry, bool removeLineBreaks = true)
 		{
 			//entry = entry.Replace("\n","");
 			entry = entry.Replace("\r", "");
 			var tokens = new List<Token>();
-			var pieces = splitString(entry, defaultSeparators);
-			splitProcessor?.Invoke(pieces);
+			var pieces = SplitString(entry, defaultSeparators);
+			SplitProcessor?.Invoke(pieces);
 			foreach (var piece in pieces)
 			{
 				var token = Token.build(piece);
-				tokenProcessor?.Invoke(token);
+				TokenProcessor?.Invoke(token);
 				tokens.Add(token);
 			}
 			tokens.ForEach(token =>
@@ -131,22 +131,22 @@ namespace NipahTokenizer
 			});
 			if (removeLineBreaks)
 				tokens.RemoveAll(token => token.type == TokenType.LineBreak);
-			tokensProcessor?.Invoke(tokens);
+			TokensProcessor?.Invoke(tokens);
 			return tokens;
 		}
-		public void GeneralizeValue(List<Token> tokens)
+		public static void GeneralizeValue(List<Token> tokens)
 		{
 			tokens.ForEach(token =>
 			{
-				if (isValue(token.type))
+				if (IsValue(token.type))
 					token.type = TokenType.Value;
 			});
 		}
-		public void GeneralizeValue_Gross(List<Token> tokens)
+		public static void GeneralizeValueGross(List<Token> tokens)
 		{
 			tokens.ForEach(token =>
 			{
-				if (isValueGross(token.type))
+				if (IsValueGross(token.type))
 					token.type = TokenType.Value;
 			});
 		}
@@ -163,7 +163,7 @@ namespace NipahTokenizer
 
 
 
-		public static List<SplitItem> splitString(string text, params S[] separatorsArr)
+		public static List<SplitItem> SplitString(string text, params S[] separatorsArr)
 		{
 			List<S> separators = new List<S>(separatorsArr);
 			List<SplitItem> list = new List<SplitItem>();
@@ -228,11 +228,11 @@ namespace NipahTokenizer
 			if (cur != "")
 				list.Add(new SplitItem(cur, curEnd, line));
 			list.RemoveAll((obj) => obj == "");
-			applyList(list);
+			ApplyList(list);
 			return list;
 		}
 		public static bool AcceptSeparatedID = false;
-		static void applyList(List<SplitItem> list)
+		static void ApplyList(List<SplitItem> list)
 		{
 			Queue<SplitItem> tokens = new Queue<SplitItem>(list);
 			list.Clear();
@@ -314,10 +314,10 @@ namespace NipahTokenizer
 						list.Add(new SplitItem("||", token.position, token.line));
 						continue;
 					}
-					if (finalSplitProcessor != null)
+					if (FinalSplitProcessor != null)
 					{
 						FinalSplit final;
-						if (finalSplitProcessor(token, next, out final))
+						if (FinalSplitProcessor(token, next, out final))
 						{
 							back = null;
 							tokens.Dequeue();

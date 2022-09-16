@@ -46,11 +46,11 @@ namespace NipahTokenizer
 		public static implicit operator Token(DBNull nul) => default;
 		#endregion
 
-		public bool isValue => Tokenizer.isValue(type);
-		public bool isOperator => Tokenizer.isOperator(type);
-		public bool isMathOperator => Tokenizer.isMathOperator(type);
-		public bool isComparer => Tokenizer.isComparisson(type);
-		public bool isConditional => Tokenizer.isConditional(type) || text.ToLower() == "xor";
+		public bool isValue => Tokenizer.IsValue(type);
+		public bool isOperator => Tokenizer.IsOperator(type);
+		public bool isMathOperator => Tokenizer.IsMathOperator(type);
+		public bool isComparer => Tokenizer.IsComparisson(type);
+		public bool isConditional => Tokenizer.IsConditional(type) || text.ToLower() == "xor";
 		public bool isId => type == TokenType.ID;
 		public bool anyClosure => type == TokenType.EOF
 												   || type == TokenType.LineBreak
