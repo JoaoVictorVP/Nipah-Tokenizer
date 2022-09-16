@@ -46,19 +46,19 @@ namespace NipahTokenizer
 		public static implicit operator Token(DBNull nul) => default;
 		#endregion
 
-		public bool isValue => Tokenizer.IsValue(type);
-		public bool isOperator => Tokenizer.IsOperator(type);
-		public bool isMathOperator => Tokenizer.IsMathOperator(type);
-		public bool isComparer => Tokenizer.IsComparisson(type);
-		public bool isConditional => Tokenizer.IsConditional(type) || text.ToLower() == "xor";
-		public bool isId => type == TokenType.ID;
-		public bool anyClosure => type == TokenType.EOF
+		public bool IsValue => Tokenizer.IsValue(type);
+		public bool IsOperator => Tokenizer.IsOperator(type);
+		public bool IsMathOperator => Tokenizer.IsMathOperator(type);
+		public bool IsComparer => Tokenizer.IsComparisson(type);
+		public bool IsConditional => Tokenizer.IsConditional(type) || text.ToLower() == "xor";
+		public bool IsId => type == TokenType.ID;
+		public bool AnyClosure => type == TokenType.EOF
 												   || type == TokenType.LineBreak
 												   || type == TokenType.Comma
-												   || isConditional
-												   || isComparer
-												   || isOperator
-												   || isMathOperator
+												   || IsConditional
+												   || IsComparer
+												   || IsOperator
+												   || IsMathOperator
 												   || type == TokenType.OpenBrackets
 												   || type == TokenType.CloseBrackets
 												   || type == TokenType.OpenSquares
@@ -350,7 +350,7 @@ namespace NipahTokenizer
 		}
 		public static bool AssertValue(this Token token, string error = "AUTO", string source = null)
 		{
-			bool result = token.isValue;
+			bool result = token.IsValue;
 			if (error == "AUTO")
 				error = $"Token '[{token.text}]' is not value, at";
 			if (!result && error != null)
@@ -361,9 +361,9 @@ namespace NipahTokenizer
 		public static object Value(this Token token) => token.value;
 		public static T Value<T>(this Token token) => (T)(token.value ?? null);
 
-		public static bool IsValue(this Token token) => token != null && token.isValue;
-		public static bool IsOperator(this Token token) => token != null && token.isOperator;
-		public static bool IsComparer(this Token token) => token != null && token.isComparer;
+		public static bool IsValue(this Token token) => token != null && token.IsValue;
+		public static bool IsOperator(this Token token) => token != null && token.IsOperator;
+		public static bool IsComparer(this Token token) => token != null && token.IsComparer;
 
 		public static string GetString(this TokenType type)
 		{
