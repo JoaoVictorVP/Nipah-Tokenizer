@@ -165,7 +165,7 @@ namespace NipahTokenizer
             }
         }
 
-        static void SplitStringEscapedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes)
+        static void SplitStringEscapedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes, StringBuilder current)
 		{
 			char c = text[index];
 			if (c is '\\')
@@ -177,8 +177,7 @@ namespace NipahTokenizer
 				else if (n is 't') cur = "\t";
 				else if (n is 'r') cur = "\r";
 				else cur = n.ToString();
-				var item = new SplitItem(cur, position, line);
-				list.Add(item);
+				current.Append(cur);
                 ProcessPositionAndEOF(c, ref position, ref line, options.EOFs);
             }
 			else
@@ -216,7 +215,7 @@ namespace NipahTokenizer
 				if (c is '\\')
 				{
 					current.Remove(current.Length - 1, 1);
-					SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes);
+					SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes, current);
 				}
 
                 ProcessPositionAndEOF(c, ref position, ref line, eofs);
@@ -290,7 +289,7 @@ namespace NipahTokenizer
                 if (c is '\\')
                 {
                     current.Remove(current.Length - 1, 1);
-                    SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes);
+                    SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes, current);
                 }
 
                 ProcessPositionAndEOF(c, ref position, ref line, eofs);
@@ -310,6 +309,8 @@ namespace NipahTokenizer
 			var scopes = new Stack<long>(32);
 
 			SplitStringNormalMode(text, ref index, ref position, ref line, options, list, scopes);
+
+			list.RemoveAll(x => x.text is "");
 
 			ApplyList(list);
 			return list;
