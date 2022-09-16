@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using S = NipahTokenizer.Separator;
 
+#nullable enable
+
 namespace NipahTokenizer
 {
 	public class Tokenizer
@@ -102,10 +104,10 @@ namespace NipahTokenizer
 		};
 		public static Tokenizer Single => _single;
 		static readonly Tokenizer _single = new Tokenizer();
-		public event Action<List<Token>> TokensProcessor;
-		public event Action<List<SplitItem>> SplitProcessor;
-		public event Action<Token> TokenProcessor;
-		public static event SplitProcessor FinalSplitProcessor;
+		public event Action<List<Token>>? TokensProcessor;
+		public event Action<List<SplitItem>>? SplitProcessor;
+		public event Action<Token>? TokenProcessor;
+		public static event SplitProcessor? FinalSplitProcessor;
 		public List<Token> Tokenize(string entry, bool removeLineBreaks = true)
 		{
 			//entry = entry.Replace("\n","");
@@ -121,7 +123,7 @@ namespace NipahTokenizer
 			}
 			tokens.ForEach(token =>
 			{
-				string str = token.value as string;
+				string? str = token.value.TrySolve<string>().Solve();
 				if (str != null)
 				{
 					str = str.Replace("''", "\"");

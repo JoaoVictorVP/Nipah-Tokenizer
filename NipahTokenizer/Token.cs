@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
+#nullable enable
+
 namespace NipahTokenizer
 {
 	public struct Token : IEquatable<Token>
@@ -19,9 +21,8 @@ namespace NipahTokenizer
 		public TokenType type;
 		public int position;
 		public int line;
-		public object value;
+		public DynValue value;
 		public bool consumed;
-		public dynamic Value => value;
 
 		public Token Or(Token other)
 		{
@@ -75,7 +76,7 @@ namespace NipahTokenizer
 		{
 			this.text = text;
 			this.type = type;
-			this.value = value;
+			this.value = DynValue.From(value);
 
 			return this;
 		}
@@ -293,26 +294,26 @@ namespace NipahTokenizer
 			this.type = type;
 			this.position = position;
 			this.line = line;
-			this.value = value;
+			this.value = DynValue.From(value);
 			consumed = false;
 
 			isCreated = true;
 		}
 		public override string ToString()
 		{
-			if (value != null)
+			if (value.Type is not DynType.Null)
 				return $"Token: {text} : {type} = {value} [line: {line}]";
 			return $"Token: {text} : {type} [line: {line}]";
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			return obj is Token && Equals((Token)obj);
 		}
 
 		public override int GetHashCode()
 		{
-			return text.GetHashCode() + (type.GetHashCode() + position.GetHashCode() + line.GetHashCode() + consumed.GetHashCode() + value?.GetHashCode() ?? 0);
+			return text.GetHashCode() + (type.GetHashCode() + position.GetHashCode() + line.GetHashCode() + consumed.GetHashCode() + value.GetHashCode());
 		}
 
 		public bool Equals(Token other)
@@ -359,7 +360,7 @@ namespace NipahTokenizer
 		}
 		public static TokenType Type(this Token token) => token.type;
 		public static object Value(this Token token) => token.value;
-		public static T Value<T>(this Token token) => (T)(token.value ?? null);
+		public static T? Value<T>(this Token token) => token.value.TrySolve<T>().Solve();
 
 		public static bool IsValue(this Token token) => token != null && token.IsValue;
 		public static bool IsOperator(this Token token) => token != null && token.IsOperator;
@@ -449,13 +450,13 @@ namespace NipahTokenizer
 			return type.ToString();
 		}
 
-		public static Token TryPeek(this Queue<Token> tokens)
+		public static Token? TryPeek(this Queue<Token> tokens)
 		{
 			if (tokens.Count > 0)
 				return tokens.Peek();
 			return null;
 		}
-		public static Token TryDequeue(this Queue<Token> tokens)
+		public static Token? TryDequeue(this Queue<Token> tokens)
 		{
 			if (tokens.Count > 0)
 				return tokens.Dequeue();

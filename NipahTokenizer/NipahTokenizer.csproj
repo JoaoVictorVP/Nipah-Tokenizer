@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>NipahTokenizer</PackageId>
     <Authors>Nipah</Authors>
@@ -10,6 +10,8 @@
     <PackageIcon>d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg</PackageIcon>
     <PackageIconUrl />
     <PackageReleaseNotes>Primeira e provavelmente única versão</PackageReleaseNotes>
+    <LangVersion>10</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -23,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\Pictures\d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg">
+    <None Include="..\..\..\..\OneDrive\Pictures\d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
