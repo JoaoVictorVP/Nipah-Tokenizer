@@ -316,8 +316,7 @@ namespace NipahTokenizer
 					}
 					if (FinalSplitProcessor != null)
 					{
-						FinalSplit final;
-						if (FinalSplitProcessor(token, next, out final))
+						if (FinalSplitProcessor(token, next, out FinalSplit final))
 						{
 							back = null;
 							tokens.Dequeue();
@@ -327,8 +326,7 @@ namespace NipahTokenizer
 					/* Optional Negative Number Parser */
 					if (token == "-")
 					{
-						long num;
-						if (long.TryParse(next, out num))
+						if (long.TryParse(next, out long num))
 						{
 							back = null;
 							tokens.Dequeue();
@@ -346,8 +344,7 @@ namespace NipahTokenizer
 					/* Optional Dotted Number Parser */
 					if (token == ".")
 					{
-						long num;
-						if (long.TryParse(back, out num))
+						if (long.TryParse(back, out long num))
 						{
 							if (long.TryParse(next, out num))
 							{
