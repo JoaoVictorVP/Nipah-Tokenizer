@@ -17,14 +17,14 @@ namespace NipahTokenizer
 			bool lineComment = false;
 			list.RemoveAll(t =>
 			{
-				if (!lineComment && t.type == TokenType.CommentBegin)
+				if (!lineComment && t.Type == TokenType.CommentBegin)
 				{
 					insideComment = true;
 					return true;
 				}
 				if (insideComment)
 				{
-					if (t.type == TokenType.CommentEnd)
+					if (t.Type == TokenType.CommentEnd)
 					{
 						insideComment = false;
 						return true;
@@ -32,12 +32,12 @@ namespace NipahTokenizer
 				}
 				else
 				{
-					if (t.type == TokenType.Comment)
+					if (t.Type == TokenType.Comment)
 					{
 						lineComment = true;
 						return true;
 					}
-					if (lineComment && t.type == TokenType.EOF)
+					if (lineComment && t.Type == TokenType.EOF)
 					{
 						lineComment = false;
 						return true;

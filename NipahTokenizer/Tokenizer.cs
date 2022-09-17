@@ -125,16 +125,16 @@ namespace NipahTokenizer
 			}
 			tokens.ForEach(token =>
 			{
-				string? str = token.value.TrySolve<string>().Solve();
+				string? str = token.Value.TrySolve<string>().Solve();
 				if (str != null)
 				{
 					str = str.Replace("''", "\"");
 					str = str.Replace('£', '\'');
-					token.value = str;
+					token.Value = str;
 				}
 			});
 			if (removeLineBreaks)
-				tokens.RemoveAll(token => token.type == TokenType.LineBreak);
+				tokens.RemoveAll(token => token.Type == TokenType.LineBreak);
 			TokensProcessor?.Invoke(tokens);
 			return tokens;
 		}
@@ -142,16 +142,16 @@ namespace NipahTokenizer
 		{
 			tokens.ForEach(token =>
 			{
-				if (IsValue(token.type))
-					token.type = TokenType.Value;
+				if (IsValue(token.Type))
+					token.Type = TokenType.Value;
 			});
 		}
 		public static void GeneralizeValueGross(List<Token> tokens)
 		{
 			tokens.ForEach(token =>
 			{
-				if (IsValueGross(token.type))
-					token.type = TokenType.Value;
+				if (IsValueGross(token.Type))
+					token.Type = TokenType.Value;
 			});
 		}
 

@@ -9,20 +9,13 @@ namespace NipahTokenizer
 {
 	public struct Token : IEquatable<Token>
 	{
-		public static bool LineBreakCountAsEOF = true;
-		//public static string functionText = "func";
-		//public static string trueText = "true";
-		//public static string falseText = "false";
-		//public static string ifText = "if";
-		//public static string elseText = "else";
-		//public static string thenText = "then";
-		//public static string endText = "end";
-		public string text;
-		public TokenType type;
-		public int position;
-		public int line;
-		public DynValue value;
-		public bool consumed;
+		public static bool LineBreakCountAsEOF { get; set; } = true;
+
+		public string Text { get; set; }
+		public TokenType Type { get; set; }
+		public int Position { get; set; }
+		public int Line { get; set; }
+		public DynValue Value { get; set; }
 
 		public Token Or(Token other)
 		{
@@ -47,55 +40,55 @@ namespace NipahTokenizer
 		public static implicit operator Token(DBNull nul) => default;
 		#endregion
 
-		public bool IsValue => Tokenizer.IsValue(type);
-		public bool IsOperator => Tokenizer.IsOperator(type);
-		public bool IsMathOperator => Tokenizer.IsMathOperator(type);
-		public bool IsComparer => Tokenizer.IsComparisson(type);
-		public bool IsConditional => Tokenizer.IsConditional(type) || text.ToLower() == "xor";
-		public bool IsId => type == TokenType.ID;
-		public bool AnyClosure => type == TokenType.EOF
-												   || type == TokenType.LineBreak
-												   || type == TokenType.Comma
+		public bool IsValue => Tokenizer.IsValue(Type);
+		public bool IsOperator => Tokenizer.IsOperator(Type);
+		public bool IsMathOperator => Tokenizer.IsMathOperator(Type);
+		public bool IsComparer => Tokenizer.IsComparisson(Type);
+		public bool IsConditional => Tokenizer.IsConditional(Type) || Text.ToLower() == "xor";
+		public bool IsId => Type == TokenType.ID;
+		public bool AnyClosure => Type == TokenType.EOF
+												   || Type == TokenType.LineBreak
+												   || Type == TokenType.Comma
 												   || IsConditional
 												   || IsComparer
 												   || IsOperator
 												   || IsMathOperator
-												   || type == TokenType.OpenBrackets
-												   || type == TokenType.CloseBrackets
-												   || type == TokenType.OpenSquares
-												   || type == TokenType.CloseSquares
-												   || type == TokenType.End;
-		public bool anyClosure_Open => type == TokenType.OpenSquares
-														|| type == TokenType.OpenBrackets
-														|| type == TokenType.OpenParenthesis;
-		public bool anyClosure_Close => type == TokenType.CloseSquares
-														 || type == TokenType.CloseBrackets
-														 || type == TokenType.CloseParenthesis;
+												   || Type == TokenType.OpenBrackets
+												   || Type == TokenType.CloseBrackets
+												   || Type == TokenType.OpenSquares
+												   || Type == TokenType.CloseSquares
+												   || Type == TokenType.End;
+		public bool anyClosure_Open => Type == TokenType.OpenSquares
+														|| Type == TokenType.OpenBrackets
+														|| Type == TokenType.OpenParenthesis;
+		public bool anyClosure_Close => Type == TokenType.CloseSquares
+														 || Type == TokenType.CloseBrackets
+														 || Type == TokenType.CloseParenthesis;
 
 		public Token Modify(string text, TokenType type, object value)
 		{
-			this.text = text;
-			this.type = type;
-			this.value = DynValue.From(value);
+			this.Text = text;
+			this.Type = type;
+			this.Value = DynValue.From(value);
 
 			return this;
 		}
 
 		public void Error()
 		{
-			throw new CompileError($"Can't compile token [{text}], at", this);
+			throw new CompileError($"Can't compile token [{Text}], at", this);
 		}
 		public void SError(string source)
 		{
-			throw new CompileError($"Can't compile token [{text}], at", this, source);
+			throw new CompileError($"Can't compile token [{Text}], at", this, source);
 		}
 		public CompileError ISError(string source)
 		{
-			return new CompileError($"Can't compile token [{text}], at", this, source);
+			return new CompileError($"Can't compile token [{Text}], at", this, source);
 		}
 		public CompileError IError()
 		{
-			return new CompileError($"Can't compile token [{text}], at", this);
+			return new CompileError($"Can't compile token [{Text}], at", this);
 		}
 		public void Error(string message)
 		{
@@ -114,8 +107,8 @@ namespace NipahTokenizer
 			return new CompileError(message, this, source);
 		}
 
-		public static implicit operator string(Token token) => token.text;
-		public static implicit operator TokenType(Token token) => token.type;
+		public static implicit operator string(Token token) => token.Text;
+		public static implicit operator TokenType(Token token) => token.Type;
 		//public static implicit operator bool (Token token) => token != null;
 
 		public static Token Build(SplitItem item)
@@ -288,20 +281,19 @@ namespace NipahTokenizer
 
 		public Token(string text, TokenType type, int position, int line, object value = null)
 		{
-			this.text = text;
-			this.type = type;
-			this.position = position;
-			this.line = line;
-			this.value = DynValue.From(value);
-			consumed = false;
+			this.Text = text;
+			this.Type = type;
+			this.Position = position;
+			this.Line = line;
+			this.Value = DynValue.From(value);
 
 			isCreated = true;
 		}
 		public override string ToString()
 		{
-			if (value.Type is not DynType.Null)
-				return $"Token: {text} : {type} = {value} [line: {line}]";
-			return $"Token: {text} : {type} [line: {line}]";
+			if (Value.Type is not DynType.Null)
+				return $"Token: {Text} : {Type} = {Value} [line: {Line}]";
+			return $"Token: {Text} : {Type} [line: {Line}]";
 		}
 
 		public override bool Equals(object? obj)
@@ -311,14 +303,14 @@ namespace NipahTokenizer
 
 		public override int GetHashCode()
 		{
-			return text.GetHashCode() + (type.GetHashCode() + position.GetHashCode() + line.GetHashCode() + consumed.GetHashCode() + value.GetHashCode());
+			return Text.GetHashCode() + (Type.GetHashCode() + Position.GetHashCode() + Line.GetHashCode() + Value.GetHashCode());
 		}
 
 		public bool Equals(Token other)
 		{
 			return isCreated && other.isCreated &&
-				text == other.text && type == other.type &&
-				line == other.line && position == other.position;
+				Text == other.Text && Type == other.Type &&
+				Line == other.Line && Position == other.Position;
 		}
 	}
 }
@@ -330,9 +322,9 @@ namespace NipahTokenizer
 		public static bool Assert(this Token token, TokenType type, string error = "AUTO",
 								 string source = null)
 		{
-			bool result = token.type == type;
+			bool result = token.Type == type;
 			if (error == "AUTO")
-				error = $"Expecting '{type.GetString()}', found '{token.text ?? "NULL"}' at";
+				error = $"Expecting '{type.GetString()}', found '{token.Text ?? "NULL"}' at";
 			if (!result && error != null)
 				token.Error(error, source);
 			return result;
@@ -340,9 +332,9 @@ namespace NipahTokenizer
 		public static bool Assert(this Token token, string text, string error = "AUTO",
 								  string source = null)
 		{
-			bool result = token.text == text;
+			bool result = token.Text == text;
 			if (error == "AUTO")
-				error = $"Expecting '[{text}]', found '[{token.text ?? "NULL"}]' at";
+				error = $"Expecting '[{text}]', found '[{token.Text ?? "NULL"}]' at";
 			if (!result && error != null)
 				token.Error(error, source);
 			return result;
@@ -351,14 +343,14 @@ namespace NipahTokenizer
 		{
 			bool result = token.IsValue;
 			if (error == "AUTO")
-				error = $"Token '[{token.text}]' is not value, at";
+				error = $"Token '[{token.Text}]' is not value, at";
 			if (!result && error != null)
 				token.Error(error, source);
 			return result;
 		}
-		public static TokenType Type(this Token token) => token.type;
-		public static object Value(this Token token) => token.value;
-		public static T? Value<T>(this Token token) => token.value.TrySolve<T>().Solve();
+		public static TokenType Type(this Token token) => token.Type;
+		public static object Value(this Token token) => token.Value;
+		public static T? Value<T>(this Token token) => token.Value.TrySolve<T>().Solve();
 
 		public static bool IsValue(this Token token) => token != null && token.IsValue;
 		public static bool IsOperator(this Token token) => token != null && token.IsOperator;
@@ -510,11 +502,11 @@ namespace NipahTokenizer
 			get
 			{
 				if (token != null && source == null)
-					return base.Message + $" (Line {token.line}, Position {token.position})";
+					return base.Message + $" (Line {token.Line}, Position {token.Position})";
 				else if (token == null && source != null)
 					return base.Message + $" (File {source})";
 				else if (token != null && source != null)
-					return base.Message + $" (Line {token.line}, Position {token.position}," +
+					return base.Message + $" (Line {token.Line}, Position {token.Position}," +
 							   $" File {source})";
 				else
 					return base.Message;

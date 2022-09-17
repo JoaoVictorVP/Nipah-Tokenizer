@@ -22,6 +22,6 @@ public class NipahTokenizerTests
         var tokens = tokenizer.Tokenize(sample, options);
 
         // Assert
-        tokens.Select(x => x.text).Should().BeEquivalentTo(new[] { "Hello", ",", "World", "!" });
+        tokens.Select(x => x.Text).Should().BeEquivalentTo(new[] { "Hello", ",", "World", "!" });
     }
 }
