@@ -123,16 +123,17 @@ namespace NipahTokenizer
 				TokenProcessor?.Invoke(token);
 				tokens.Add(token);
 			}
-			tokens.ForEach(token =>
+			var sptokens = CollectionsMarshal.AsSpan(tokens);
+			foreach(ref var token in sptokens)
 			{
 				string? str = token.Value.TrySolve<string>().Solve();
-				if (str != null)
+				if (str is not null)
 				{
 					str = str.Replace("''", "\"");
-					str = str.Replace('£', '\'');
-					token.Value = str;
-				}
-			});
+                    str = str.Replace('£', '\'');
+					token = token with { Value = str };
+                }
+			}
 			if (removeLineBreaks)
 				tokens.RemoveAll(token => token.Type == TokenType.LineBreak);
 			TokensProcessor?.Invoke(tokens);
@@ -140,19 +141,21 @@ namespace NipahTokenizer
 		}
 		public static void GeneralizeValue(List<Token> tokens)
 		{
-			tokens.ForEach(token =>
+            var sptokens = CollectionsMarshal.AsSpan(tokens);
+            foreach (ref var token in sptokens)
 			{
-				if (IsValue(token.Type))
-					token.Type = TokenType.Value;
-			});
+                if (IsValue(token.Type))
+                    token = token with { Type = TokenType.Value };
+            }
 		}
 		public static void GeneralizeValueGross(List<Token> tokens)
 		{
-			tokens.ForEach(token =>
+            var sptokens = CollectionsMarshal.AsSpan(tokens);
+			foreach (ref var token in sptokens)
 			{
-				if (IsValueGross(token.Type))
-					token.Type = TokenType.Value;
-			});
+                if (IsValueGross(token.Type))
+                    token = token with { Type = TokenType.Value };
+            }
 		}
 
 		static void ProcessPositionAndEOF(char c, ref int position, ref int line, EndOfLine[] eofs)
