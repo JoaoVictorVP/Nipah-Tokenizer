@@ -1,6 +1,7 @@
 using FluentAssertions;
 using System;
 using Xunit;
+
 namespace NipahTokenizer.UnitTests;
 
 public class NipahTokenizerTests
