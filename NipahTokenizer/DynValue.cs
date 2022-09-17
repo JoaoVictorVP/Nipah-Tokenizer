@@ -110,7 +110,13 @@ public unsafe struct DynValue
             case byte x:
             {
                 dat[0] = x;
-                type = DynType.Byte;
+                type = DynType.U8;
+                break;
+            }
+            case sbyte x:
+            {
+                dat[0] = (byte)x;
+                type = DynType.I8;
                 break;
             }
             case bool x:
@@ -262,7 +268,8 @@ public unsafe struct DynValue
     {
         return type switch
         {
-            DynType.Byte => SolveNum<byte, T>(),
+            DynType.U8 => SolveNum<byte, T>(),
+            DynType.I8 => SolveNum<sbyte, T>(),
             DynType.Bool => SolveBool<T>(),
 
             DynType.I16 => SolveNum<short, T>(),
@@ -293,7 +300,8 @@ public unsafe struct DynValue
     DynType FromT<T>()
     {
         var t = typeof(T);
-        if (t == typeof(byte)) return DynType.Byte;
+        if (t == typeof(byte)) return DynType.U8;
+        else if (t == typeof(sbyte)) return DynType.I8;
         else if (t == typeof(bool)) return DynType.Bool;
         else if (t == typeof(short)) return DynType.I16;
         else if (t == typeof(ushort)) return DynType.U16;
@@ -313,11 +321,12 @@ public unsafe struct DynValue
 public enum DynType : byte
 {
     Null,
-    Byte,
     Bool,
+    I8,
     I16,
     I32,
     I64,
+    U8,
     U16,
     U32,
     U64,
