@@ -191,6 +191,15 @@ public unsafe struct DynValue
                 type = DynType.F64;
                 break;
             }
+            case char x:
+            {
+                fixed(void* ptr = dat)
+                {
+                    Unsafe.Copy(ptr, ref x);
+                }
+                type = DynType.Char;
+                break;
+            }
             case ValueType x:
             {
                 if (Unsafe.SizeOf<T>() <= 8)
@@ -265,6 +274,8 @@ public unsafe struct DynValue
             DynType.F32 => SolveNum<float, T>(),
             DynType.F64 => SolveNum<double, T>(),
 
+            DynType.Char => SolveNum<char, T>(),
+
             DynType.Other => SolveOther<T>(),
 
             DynType.String or DynType.Ref => (T)_ref,
@@ -293,6 +304,7 @@ public unsafe struct DynValue
         else if (t == typeof(float)) return DynType.F32;
         else if (t == typeof(double)) return DynType.F64;
         else if (t == typeof(string)) return DynType.String;
+        else if (t == typeof(char)) return DynType.Char;
         else if (t.IsSubclassOf(typeof(ValueType)) && Unsafe.SizeOf<T>() <= 8) return DynType.Other;
         else if (t.IsSubclassOf(typeof(object))) return DynType.Ref;
         else return DynType.Null;
@@ -311,6 +323,7 @@ public enum DynType : byte
     U64,
     F32,
     F64,
+    Char,
     Other,
     String,
     Ref

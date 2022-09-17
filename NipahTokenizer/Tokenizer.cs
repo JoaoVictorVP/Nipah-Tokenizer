@@ -313,16 +313,16 @@ namespace NipahTokenizer
 
 			list.RemoveAll(x => x.text is "");
 
-			// First run (aggregates most of results)
-			list = ApplyAggregators(CollectionsMarshal.AsSpan(list), options.Aggregators);
-			// Second run (aggregates lasting results like negative floating point numbers)
-			list = ApplyAggregators(CollectionsMarshal.AsSpan(list), options.Aggregators);
+			// Will apply aggregators until no more changes can occur
+			bool anyChanged;
+			while (((list, anyChanged) = ApplyAggregators(CollectionsMarshal.AsSpan(list), options.Aggregators)).anyChanged)
+				continue;
 
-			//ApplyList(list);
 			return list;
 		}
-		static List<SplitItem> ApplyAggregators(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<SplitAggregator> aggregators)
+		static (List<SplitItem> outputs, bool changedAny) ApplyAggregators(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<SplitAggregator> aggregators)
 		{
+			var changedAny = false;
 			var outputs = new List<SplitItem>(inputs.Length);
 			var carry = new StringBuilder(32);
 			while (inputs.Length > 0)
@@ -335,6 +335,7 @@ namespace NipahTokenizer
 					{
 						inputs = inputs[aggregator.Detectors.Length..];
 						isMatch = true;
+						changedAny = true;
 					}
 				}
 				if (isMatch is false)
@@ -343,7 +344,7 @@ namespace NipahTokenizer
 					inputs = inputs[1..];
 				}
 			}
-			return outputs;
+			return (outputs, changedAny);
 		}
 
 		static bool ApplyAggregator(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<Predicate<string>> aggregator, StringBuilder carry, List<SplitItem> outputs)

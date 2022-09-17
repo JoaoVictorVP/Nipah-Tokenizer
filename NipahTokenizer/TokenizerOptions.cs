@@ -20,7 +20,7 @@ public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine
         new S("\\="), new S("\\{"), new S("\\}"),
         new S("\\["), new S("\\]"), new S("\\:"), new S("\\<"), new S("\\>"),
         new S("\\&"), new S("\\|"), new S("\\$"), new S("\\@"), new S("\\."), new S("\\#"),
-        new S("\\!")
+        new S("\\!"), new S("\\?")
     };
     public static readonly Scope[] DefaultScopes = new Scope[]
     {

@@ -281,8 +281,6 @@ namespace NipahTokenizer
 			{
 				if (char.IsDigit(c) || char.IsLetter(c) || c == '_' || c == '.')
 					continue;
-				if (Tokenizer.AcceptSeparatedID && c == '-')
-					continue;
 				return false;
 			}
 			return true;
