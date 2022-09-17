@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 using S = NipahTokenizer.Separator;
 
@@ -312,9 +313,54 @@ namespace NipahTokenizer
 
 			list.RemoveAll(x => x.text is "");
 
-			ApplyList(list);
+			// First run (aggregates most of results)
+			list = ApplyAggregators(CollectionsMarshal.AsSpan(list), options.Aggregators);
+			// Second run (aggregates lasting results like negative floating point numbers)
+			list = ApplyAggregators(CollectionsMarshal.AsSpan(list), options.Aggregators);
+
+			//ApplyList(list);
 			return list;
 		}
+		static List<SplitItem> ApplyAggregators(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<SplitAggregator> aggregators)
+		{
+			var outputs = new List<SplitItem>(inputs.Length);
+			var carry = new StringBuilder(32);
+			while (inputs.Length > 0)
+			{
+				bool isMatch = false;
+				foreach (var aggregator in aggregators)
+				{
+					carry.Clear();
+					if (ApplyAggregator(inputs, aggregator.Detectors, carry, outputs))
+					{
+						inputs = inputs[aggregator.Detectors.Length..];
+						isMatch = true;
+					}
+				}
+				if (isMatch is false)
+				{
+					outputs.Add(inputs[0]);
+					inputs = inputs[1..];
+				}
+			}
+			return outputs;
+		}
+
+		static bool ApplyAggregator(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<Predicate<string>> aggregator, StringBuilder carry, List<SplitItem> outputs)
+			=> ((aggregator.Length is 0) || (aggregator.Length is 0 && inputs.Length is 0) || aggregator[0](inputs[0]))
+			&& (inputs.Length >= aggregator.Length)
+			&& aggregator switch
+			{
+				{ Length: > 0 } => ApplyAggregator(inputs[1..], aggregator[1..], carry.Append(inputs[0].text), outputs),
+				_ => Add(outputs, new(carry.Length is 0 ? inputs[0].text : carry.ToString(), 
+					inputs[0].position, inputs[0].line))
+			};
+		static bool Add<T>(List<T> list, T item)
+		{
+			list.Add(item);
+			return true;
+		}
+
 		public static bool AcceptSeparatedID = false;
 		static void ApplyList(List<SplitItem> list)
 		{

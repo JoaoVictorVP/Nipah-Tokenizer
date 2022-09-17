@@ -9,7 +9,7 @@ using S = NipahTokenizer.Separator;
 
 namespace NipahTokenizer;
 
-public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine[] EOFs)
+public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine[] EOFs, SplitAggregator[] Aggregators)
 {
     public static readonly Separator[] DefaultSeparators = new[]
     {
@@ -33,7 +33,19 @@ public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine
         new('\0')
     };
 
-    public static readonly TokenizerOptions Default = new(DefaultSeparators, DefaultScopes, DefaultEndOfLines);
+    public static readonly SplitAggregator[] DefaultAggregators = new SplitAggregator[]
+    {
+        new("=", "="), new("!", "="), new(">", "="), new("<", "="),
+        new("/", "/"), new("/", "*"), new("*", "/"),
+        new("-", ">"), new("=", ">"),
+        new("&", "&"), new("|", "|"),
+        // Floating point numbers (like 3.14 or 9,36)
+        new(x => long.TryParse(x, out _), y => y is ".", z => long.TryParse(z, out _)),
+        // Negative numbers (like -3000)
+        new(x => x is "-", y => long.TryParse(y, out _) || double.TryParse(y, out _))
+    };
+
+    public static readonly TokenizerOptions Default = new(DefaultSeparators, DefaultScopes, DefaultEndOfLines, DefaultAggregators);
 }
 
 public class Separator
@@ -91,5 +103,20 @@ public class EndOfLine
     public EndOfLine(char eOF)
     {
         EOF = eOF;
+    }
+}
+
+public class SplitAggregator
+{
+    public readonly Predicate<string>[] Detectors;
+
+    public SplitAggregator(params Predicate<string>[] detectors)
+    {
+        Detectors = detectors;
+    }
+
+    public SplitAggregator(params string[] detectors)
+    {
+        Detectors = detectors.Select(Predicate<string> (x) => (cmp) => x == cmp).ToArray();
     }
 }
