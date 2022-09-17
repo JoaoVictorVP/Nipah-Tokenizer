@@ -19,9 +19,7 @@ namespace NipahTokenizer
 
 		public Token Or(Token other)
 		{
-			if (IsNull)
-				return other;
-			return this;
+			return IsNull ? other : this;
 		}
 
 		#region REFERENCE
