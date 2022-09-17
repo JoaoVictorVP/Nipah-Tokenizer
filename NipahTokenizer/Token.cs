@@ -11,11 +11,11 @@ namespace NipahTokenizer
 	{
 		public static bool LineBreakCountAsEOF { get; set; } = true;
 
-		public string Text { get; set; }
-		public TokenType Type { get; set; }
-		public int Position { get; set; }
-		public int Line { get; set; }
-		public DynValue Value { get; set; }
+		public string Text { get; init; }
+		public TokenType Type { get; init; }
+		public int Position { get; init; }
+		public int Line { get; init; }
+		public DynValue Value { get; init; }
 
 		public Token Or(Token other)
 		{
@@ -64,13 +64,7 @@ namespace NipahTokenizer
 														 || Type == TokenType.CloseParenthesis;
 
 		public Token Modify(string text, TokenType type, object value)
-		{
-			this.Text = text;
-			this.Type = type;
-			this.Value = DynValue.From(value);
-
-			return this;
-		}
+			=> this with { Text = text, Type = type, Value = DynValue.From(value) };
 
 		public void Error()
 		{
