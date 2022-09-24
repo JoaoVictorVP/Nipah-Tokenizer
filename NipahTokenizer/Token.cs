@@ -447,24 +447,24 @@ namespace NipahTokenizer
 			get
 			{
 				if (token != null && source == null)
-					return base.Message + $" (Line {token.Line}, Position {token.Position})";
+					return base.Message + $" (Line {token?.Line}, Position {token?.Position})";
 				else if (token == null && source != null)
 					return base.Message + $" (File {source})";
 				else if (token != null && source != null)
-					return base.Message + $" (Line {token.Line}, Position {token.Position}," +
+					return base.Message + $" (Line {token?.Line}, Position {token?.Position}," +
 							   $" File {source})";
 				else
 					return base.Message;
 			}
 		}
-		public Token Token => token;
+		public Token? Token => token;
 		public string FileSource => source;
-		Token token;
+		Token? token;
 		string source;
 		public CompileError(string message) : base(message)
 		{
 		}
-		public CompileError(string message, Token token, string source = null) : base(message)
+		public CompileError(string message, Token? token, string source = null) : base(message)
 		{
 			this.token = token;
 			this.source = source;
