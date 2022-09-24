@@ -34,10 +34,10 @@ namespace NipahTokenizer
 		public bool IsConditional => Tokenizer.IsConditional(Type) || Text.ToLower() == "xor";
 		public bool IsId => Type == TokenType.ID;
 
-		public Token Modify(string text, TokenType type, object value)
-			=> this with { Text = text, Type = type, Value = DynValue.From(value) };
+        public Token Modify<T>(string text, TokenType type, T value)
+            => this with { Text = text, Type = type, Value = DynValue.From(value) };
 
-		public void Error()
+        public void Error()
 		{
 			throw new CompileError($"Can't compile token [{Text}], at", this);
 		}
