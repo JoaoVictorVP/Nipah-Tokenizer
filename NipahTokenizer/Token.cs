@@ -37,6 +37,9 @@ namespace NipahTokenizer
         public Token Modify<T>(string text, TokenType type, T value)
             => this with { Text = text, Type = type, Value = DynValue.From(value) };
 
+		public Token WithValue<T>(T value)
+			=> this with { Value = DynValue.From(value) };
+
         public void Error()
 		{
 			throw new CompileError($"Can't compile token [{Text}], at", this);
