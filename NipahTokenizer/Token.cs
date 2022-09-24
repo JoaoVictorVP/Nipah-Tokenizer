@@ -102,7 +102,6 @@ namespace NipahTokenizer
 					value = false;
 					break;
 				case "null": type = TokenType.NullLiteral; break;
-				//case "null": type = TokenType.ID;break;
 				case "+": type = TokenType.Plus; break;
 				case "-": type = TokenType.Minus; break;
 				case "/": type = TokenType.Divide; break;
@@ -271,9 +270,9 @@ namespace NipahTokenizer
 		public static object Value(this Token token) => token.Value;
 		public static T? Value<T>(this Token token) => token.Value.TrySolve<T>().Solve();
 
-		public static bool IsValue(this Token token) => token != null && token.IsValue;
-		public static bool IsOperator(this Token token) => token != null && token.IsOperator;
-		public static bool IsComparer(this Token token) => token != null && token.IsComparer;
+		public static bool IsValue(this Token token) => token.IsValue;
+		public static bool IsOperator(this Token token) => token.IsOperator;
+		public static bool IsComparer(this Token token) => token.IsComparer;
 
 		public static string GetString(this TokenType type)
 		{
