@@ -10,23 +10,9 @@ namespace NipahTokenizer
 		/// The email token '@'
 		/// </summary>
 		Email,
-		//Say,
-		//Echo,
-		//Chose,
-		//Choice,
-		//Define,
-		//Scope,
-		//Loop,
 		/// <summary>
 		/// The constant token 'const'
 		/// </summary>
-		//Constant,
-		//Set,
-		//Invoke,
-		//Input,
-		//Label,
-		//Goto,
-		//To,
 		/// <summary>
 		/// The comment token '//'.
 		/// </summary>
@@ -39,6 +25,9 @@ namespace NipahTokenizer
 		/// The comment end token '*/'.
 		/// </summary>
 		CommentEnd,
+		/// <summary>
+		/// The comma character ','.
+		/// </summary>
 		Comma,
 		//Global,
 		/// <summary>
@@ -65,20 +54,9 @@ namespace NipahTokenizer
 		/// The close squares ']'
 		/// </summary>
 		CloseSquares,
-		//Function,
-		//Return,
-		//Field,
-		//Type,
-		//Then,
-		//If,
-		//Else,
-		//For,
-		//ForEach,
-		//While,
 		/// <summary>
-		/// void
+		/// true
 		/// </summary>
-		VoidLiteral,
 		TrueLiteral,
 		/// <summary>
 		/// false
@@ -118,13 +96,10 @@ namespace NipahTokenizer
 		/// *
 		/// </summary>
 		Multiply,
-		//Public,
-		//Private,
-		//Static,
-		//Internal,
-		//Export,
+		/// <summary>
+		/// Represents an id (like: 'aName_Before')
+		/// </summary>
 		ID,
-		//Variable,
 		/// <summary>
 		/// Traditional a '=' b
 		/// </summary>
@@ -158,7 +133,7 @@ namespace NipahTokenizer
 		/// </summary>
 		Descript,
 		/// <summary>
-		/// The and token 'AND, e-commercial.e-commercial'
+		/// The and token 'AND, <![CDATA[&&]]>'
 		/// </summary>
 		And,
 		/// <summary>
@@ -170,7 +145,7 @@ namespace NipahTokenizer
 		/// </summary>
 		Rich,
 		/// <summary>
-		/// The reference token 'E-Commercial'
+		/// The reference token '<![CDATA[&]]>'
 		/// </summary>
 		Reference,
 		/// <summary>
@@ -194,13 +169,9 @@ namespace NipahTokenizer
 		/// </summary>
 		Exclamation,
 		/// <summary>
-		/// The End Of Line (; \n \r)
+		/// The End Of Line (like: '; \n \r')
 		/// </summary>
 		EOF,
-		/// <summary>
-		/// The line break (when LineBreakCountAsEOF disabled, then \n will be this)
-		/// </summary>
-		LineBreak,
 		End
 	}
 }

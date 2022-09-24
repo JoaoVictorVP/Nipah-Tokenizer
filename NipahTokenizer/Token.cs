@@ -111,19 +111,6 @@ namespace NipahTokenizer
 			//text = text.ToLower();
 			switch (text)
 			{
-				//case "say":type = TokenType.Say;break;
-				//case "echo":type = TokenType.Echo;break;
-				//case "choice":type = TokenType.Choice;break;
-				//case "chose":type = TokenType.Chose;break;
-				//case "define":type = TokenType.Define;break;
-				//case "const":type = TokenType.Constant;break;
-				//case "set":type = TokenType.Set;break;
-				//case "invoke":type = TokenType.Invoke;break;
-				//case "input":type = TokenType.Input;break;
-				//case "label":type = TokenType.Label;break;
-				//case "goto":type = TokenType.Goto;break;
-				//case "to":type = TokenType.To;break;
-
 				case "@": type = TokenType.Email; break;
 
 				case "//": type = TokenType.Comment; break;
@@ -150,21 +137,6 @@ namespace NipahTokenizer
 				case "-": type = TokenType.Minus; break;
 				case "/": type = TokenType.Divide; break;
 				case "*": type = TokenType.Multiply; break;
-				//case "if":type = TokenType.If;break;
-				//case "else":type = TokenType.Else;break;
-				//case "function":type = TokenType.Function;break;
-				//case "global":type = TokenType.Field;break;
-				//case "public":type = TokenType.Public;break;
-				//case "private":type = TokenType.Private;break;
-				//case "static":type = TokenType.Static;break;
-				//case "internal":type = TokenType.Internal;break;
-				//case "export":type = TokenType.Export;break;
-				//case "type":type = TokenType.Type;break;
-				//case "for":type = TokenType.For;break;
-				//case "while":type = TokenType.While;break;
-				//case "foreach":type = TokenType.ForEach;break;
-				case "void": type = TokenType.VoidLiteral; break;
-				//case "var":type = TokenType.Variable;break;
 				case "=": type = TokenType.Bind; break;
 				case "==": type = TokenType.Equal; break;
 				case "!=": type = TokenType.Different; break;
@@ -172,7 +144,7 @@ namespace NipahTokenizer
 				case "<": type = TokenType.Lower; break;
 				case ">=": type = TokenType.LargerOrEqual; break;
 				case "<=": type = TokenType.LowerOrEqual; break;
-				case "\n": type = LineBreakCountAsEOF ? TokenType.EOF : TokenType.LineBreak; break;
+				case "\n": type = TokenType.EOF; break;
 				case ";": type = TokenType.EOF; break;
 				case ",": type = TokenType.Comma; break;
 				case ":": type = TokenType.Descript; break;
@@ -183,22 +155,14 @@ namespace NipahTokenizer
 
 				case "=>": type = TokenType.To; break;
 
-				case "AND": type = TokenType.And; break;
-				case "&&": type = TokenType.And; break;
-				case "OR": type = TokenType.Or; break;
-				case "||": type = TokenType.Or; break;
+				case "AND": case "&&": type = TokenType.And; break;
+				case "OR": case "||": type = TokenType.Or; break;
 
 				case ".": type = TokenType.Dot; break;
 
 				case "#": type = TokenType.Hashtag; break;
 
 				case "!": type = TokenType.Exclamation; break;
-
-					//case "return":type = TokenType.Return;break;
-					//case "then":type = TokenType.Then;break;
-					//case "end":type = TokenType.End;break;
-
-					//case "loop":type = TokenType.Loop;break;
 			}
 			//switch(text.ToLower())
 			//{
