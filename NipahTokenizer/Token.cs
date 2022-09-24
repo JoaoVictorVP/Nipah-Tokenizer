@@ -17,25 +17,14 @@ namespace NipahTokenizer
 		public int Line { get; init; }
 		public DynValue Value { get; init; }
 
-		public Token Or(Token other)
+		public Token Or(Token? other)
 		{
-			return IsNull ? other : this;
+			return other ?? this;
 		}
 
 		#region REFERENCE
-		readonly bool isCreated;
-		public bool IsCreated => isCreated;
-		public bool IsNull => !isCreated;
-
-		public static implicit operator bool(Token token) => token.isCreated;
-
-		public static bool operator ==(Token left, DBNull right) => !left.isCreated;
-		public static bool operator !=(Token left, DBNull right) => !(left == null);
-
 		public static bool operator ==(Token left, Token right) => left.Equals(right);
 		public static bool operator !=(Token left, Token right) => !(left == right);
-
-		public static implicit operator Token(DBNull nul) => default;
 		#endregion
 
 		public bool IsValue => Tokenizer.IsValue(Type);
@@ -241,8 +230,6 @@ namespace NipahTokenizer
 			this.Position = position;
 			this.Line = line;
 			this.Value = DynValue.From(value);
-
-			isCreated = true;
 		}
 		public override string ToString()
 		{
@@ -263,8 +250,7 @@ namespace NipahTokenizer
 
 		public bool Equals(Token other)
 		{
-			return isCreated && other.isCreated &&
-				Text == other.Text && Type == other.Type &&
+			return Text == other.Text && Type == other.Type &&
 				Line == other.Line && Position == other.Position;
 		}
 	}
