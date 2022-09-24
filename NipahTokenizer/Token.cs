@@ -152,13 +152,9 @@ namespace NipahTokenizer
 
 				case "!": type = TokenType.Exclamation; break;
 			}
-			//switch(text.ToLower())
-			//{
-			//	case "scope":type = TokenType.Scope;break;
-			//}
 			if (type == TokenType.None)
 			{
-				if (text[0] == '"' && text[text.Length - 1] == '"')
+				if (text[0] == '"' && text[^1] == '"')
 				{
 					type = TokenType.StringLiteral;
 					value = text.Remove(0, 1).Remove(text.Length - 2, 1);
