@@ -11,7 +11,8 @@
     <PackageIconUrl />
     <PackageReleaseNotes>Refatoração de boa parte do código.
 Otimizações e correções de problemas.
-A utilização do tokenizador se tornou significativamente mais simples e customizável.</PackageReleaseNotes>
+A utilização do tokenizador se tornou significativamente mais simples e customizável.
+(.NET 6.0+)</PackageReleaseNotes>
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -23,6 +24,8 @@ A utilização do tokenizador se tornou significativamente mais simples e custom
     <Title>Nipah Tokenizer</Title>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>NIPAH License.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,6 +36,10 @@ A utilização do tokenizador se tornou significativamente mais simples e custom
     <None Include="..\..\..\..\OneDrive\Pictures\d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\NIPAH License.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
