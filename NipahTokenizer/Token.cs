@@ -11,11 +11,11 @@ namespace NipahTokenizer
 	{
 		public static bool LineBreakCountAsEOF { get; set; } = true;
 
-		public string Text { get; init; }
-		public TokenType Type { get; init; }
-		public int Position { get; init; }
-		public int Line { get; init; }
-		public DynValue Value { get; init; }
+		public readonly string Text { get; init; }
+		public readonly TokenType Type { get; init; }
+		public readonly int Position { get; init; }
+		public readonly int Line { get; init; }
+		public readonly DynValue Value { get; init; }
 
 		public Token Or(Token? other)
 		{
