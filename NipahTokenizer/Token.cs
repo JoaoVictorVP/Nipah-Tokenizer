@@ -436,8 +436,8 @@ namespace NipahTokenizer
 		}
 		public Token? Token => token;
 		public string? FileSource => source;
-		Token? token;
-		string? source;
+		readonly Token? token;
+		readonly string? source;
 		public CompileError(string message) : base(message)
 		{
 		}
