@@ -219,13 +219,13 @@ namespace NipahTokenizer
 			return true;
 		}
 
-		public Token(string text, TokenType type, int position, int line, object value = null)
+		public Token(string text, TokenType type, int position, int line, object? value = null)
 		{
-			this.Text = text;
-			this.Type = type;
-			this.Position = position;
-			this.Line = line;
-			this.Value = DynValue.From(value);
+			Text = text;
+			Type = type;
+			Position = position;
+			Line = line;
+			Value = DynValue.From(value);
 		}
 		public override string ToString()
 		{
