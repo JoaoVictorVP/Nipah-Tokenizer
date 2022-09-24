@@ -391,8 +391,7 @@ namespace NipahTokenizer
 		}
 		public static Queue<Token> Add(this Queue<Token> tokens, Token token)
 		{
-			//List<Token> toks = new List<Token>(tokens);
-			List<Token> toks = Lists<Token>.Get();
+			List<Token> toks = Lists<Token>.Get(tokens.Count + 1);
 			toks.AddRange(tokens);
 			toks.Add(token);
 			var result = new Queue<Token>(toks);
@@ -401,29 +400,29 @@ namespace NipahTokenizer
 		}
 		public static Queue<Token> Insert(this Queue<Token> tokens, int index, Token token)
 		{
-			var toks = Lists<Token>.Get();
+			var toks = Lists<Token>.Get(tokens.Count + 1);
 			toks.AddRange(tokens);
 			toks.Insert(index, token);
 			var q = new Queue<Token>(toks);
-			GSPool.Return(toks);
+			toks.Return();
 			return q;
 		}
 		public static Queue<Token> Remove(this Queue<Token> tokens, Token token)
 		{
-			var toks = GSPool.Get<List<Token>>();
+			var toks = Lists<Token>.Get(tokens.Count);
 			toks.AddRange(tokens);
 			toks.Remove(token);
 			var q = new Queue<Token>(toks);
-			GSPool.Return(toks);
+			toks.Return();
 			return q;
 		}
 		public static Queue<Token> RemoveAt(this Queue<Token> tokens, int index)
 		{
-			var toks = GSPool.Get<List<Token>>();
+			var toks = Lists<Token>.Get(tokens.Count);
 			toks.AddRange(tokens);
 			toks.RemoveAt(index);
 			var q = new Queue<Token>(toks);
-			GSPool.Return(toks, t => t.Clear());
+			toks.Return();
 			return q;
 		}
 	}

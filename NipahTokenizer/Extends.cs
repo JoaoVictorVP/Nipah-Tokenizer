@@ -136,22 +136,16 @@ namespace NipahTokenizer
 	{
 		static readonly Queue<List<T>> pool = new Queue<List<T>>();
 
-		public static List<T> Get(bool andReturn = false, int defSize = 1)
+		public static List<T> Get(int defSize = 32)
 		{
 			List<T> list;
 			if(pool.Count == 0)
 			{
-				for(int i = 0; i < defSize; i++)
-					pool.Enqueue(new List<T>(32));
-				list = new List<T>(32);
+				list = new List<T>(defSize);
 			}
 			else
 				list = pool.Dequeue();
-			
-			if(andReturn)
-				pool.Enqueue(list);
 
-			list.Clear();
 			return list;
 		}
 		public static void Return(List<T> list)

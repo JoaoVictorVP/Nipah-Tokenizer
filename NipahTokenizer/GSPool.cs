@@ -11,6 +11,9 @@ static class GSPooler<T>
     public static readonly Queue<T> Pool = new(32);
 }
 
+/// <summary>
+/// Represents a generic static pool for any desired type
+/// </summary>
 public static class GSPool
 {
     public static T Get<T>() where T : new()
@@ -28,6 +31,12 @@ public static class GSPool
     }
     public static void Return<T>(T instance)
     {
+        GSPooler<T>.Pool.Enqueue(instance);
+    }
+    public static void Return<T>(T instance, Action<T> cleaning)
+    {
+        ArgumentNullException.ThrowIfNull(cleaning);
+        cleaning(instance);
         GSPooler<T>.Pool.Enqueue(instance);
     }
 }
