@@ -167,7 +167,7 @@ namespace NipahTokenizer
             }
         }
 
-        static void SplitStringEscapedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes, StringBuilder current)
+        static void SplitStringEscapedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, StringBuilder current)
 		{
 			char c = text[index];
 			if (c is '\\')
@@ -185,7 +185,7 @@ namespace NipahTokenizer
 			else
 				throw new Exception("Out of scaping context");
 		}
-        static void SplitStringScopedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes)
+        static void SplitStringScopedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list)
 		{
             var scopeDefs = options.Scopes;
             var eofs = options.EOFs;
@@ -218,7 +218,7 @@ namespace NipahTokenizer
 				if (c is '\\')
 				{
 					current.Remove(current.Length - 1, 1);
-					SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes, current);
+					SplitStringEscapedMode(text, ref index, ref position, ref line, options, current);
 				}
 
                 ProcessPositionAndEOF(c, ref position, ref line, eofs);
@@ -227,7 +227,7 @@ namespace NipahTokenizer
 				list.Add(new(current.ToString(), position, line));
 			StringBuilderPool.Return(current);
 		}
-		static void SplitStringNormalMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes)
+		static void SplitStringNormalMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list)
 		{
             var separators = options.Separators;
             var scopeDefs = options.Scopes;
@@ -285,7 +285,7 @@ namespace NipahTokenizer
 					if(scoper.Begin == c)
 					{
 						current.Clear();
-						SplitStringScopedMode(text, ref index, ref position, ref line, options, list, scopes);
+						SplitStringScopedMode(text, ref index, ref position, ref line, options, list);
 						break;
 					}
                 }
@@ -293,7 +293,7 @@ namespace NipahTokenizer
                 if (c is '\\')
                 {
                     current.Remove(current.Length - 1, 1);
-                    SplitStringEscapedMode(text, ref index, ref position, ref line, options, list, scopes, current);
+                    SplitStringEscapedMode(text, ref index, ref position, ref line, options, current);
                 }
 
                 ProcessPositionAndEOF(c, ref position, ref line, eofs);
@@ -313,7 +313,7 @@ namespace NipahTokenizer
 
 			var scopes = new Stack<long>(32);
 
-			SplitStringNormalMode(text, ref index, ref position, ref line, options, list, scopes);
+			SplitStringNormalMode(text, ref index, ref position, ref line, options, list);
 
 			list.RemoveAll(x => x.text is "");
 
