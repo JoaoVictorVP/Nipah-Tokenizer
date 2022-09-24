@@ -191,7 +191,7 @@ namespace NipahTokenizer
             var eofs = options.EOFs;
 
             int count = text.Length;
-			var current = new StringBuilder(320);
+			var current = StringBuilderPool.Get(320);
 
 			int selfIndex = index;
 			for(index = selfIndex; index < count; index++)
@@ -210,6 +210,7 @@ namespace NipahTokenizer
 						var item = new SplitItem(current.ToString(), position, line);
 						list.Add(item);
                         ProcessPositionAndEOF(c, ref position, ref line, eofs);
+						StringBuilderPool.Return(current);
 						return;
                     }
 				}
@@ -224,6 +225,7 @@ namespace NipahTokenizer
             }
 			if(current.Length > 0)
 				list.Add(new(current.ToString(), position, line));
+			StringBuilderPool.Return(current);
 		}
 		static void SplitStringNormalMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Stack<long> scopes)
 		{
@@ -233,7 +235,7 @@ namespace NipahTokenizer
 
             int count = text.Length;
 
-            var current = new StringBuilder(320);
+            var current = StringBuilderPool.Get(320);
 
 			int selfIndex = index;
             for (index = selfIndex; index < count; index++)
@@ -298,6 +300,7 @@ namespace NipahTokenizer
             }
             if (current.Length > 0)
                 list.Add(new(current.ToString(), position, line));
+			StringBuilderPool.Return(current);
         }
 
 		public static List<SplitItem> SplitString(string text, TokenizerOptions options)
