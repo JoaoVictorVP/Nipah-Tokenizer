@@ -6,18 +6,28 @@ using System.Threading.Tasks;
 
 namespace NipahTokenizer;
 
-public static class GSPool<T> where T : new()
+static class GSPooler<T>
 {
-    static readonly Queue<T> pool = new(32);
+    public static readonly Queue<T> Pool = new(32);
+}
 
-    public static T Get()
+public static class GSPool
+{
+    public static T Get<T>() where T : new()
     {
-        return pool.TryDequeue(out var t) is false 
+        return GSPooler<T>.Pool.TryDequeue(out var t) is false 
             ? new() 
             : t;
     }
-    public static void Return(T instance)
+    public static T Get<T>(Func<T> factory)
     {
-        pool.Enqueue(instance);
+        ArgumentNullException.ThrowIfNull(factory);
+        return GSPooler<T>.Pool.TryDequeue(out var t) is false
+            ? factory()
+            : t;
+    }
+    public static void Return<T>(T instance)
+    {
+        GSPooler<T>.Pool.Enqueue(instance);
     }
 }
