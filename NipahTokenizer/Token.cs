@@ -74,9 +74,9 @@ namespace NipahTokenizer
 		{
 			throw new CompileError(message, this);
 		}
-		public void Error(string message, string source)
+		public void Error(string message, string? source)
 		{
-			throw new CompileError(message, this, source);
+			throw new CompileError(message, this, source ?? "<n/a>");
 		}
 		public CompileError IError(string message)
 		{
@@ -94,7 +94,7 @@ namespace NipahTokenizer
 		public static Token Build(SplitItem item)
 		{
 			string text = item.text;
-			object value = null;
+			object? value = null;
 			var type = TokenType.None;
 			//text = text.ToLower();
 			switch (text)
@@ -280,12 +280,12 @@ namespace NipahTokenizer
 				token.Error(error, source);
 			return result;
 		}
-		public static bool AssertValue(this Token token, string error = "AUTO", string? source = null)
+		public static bool AssertValue(this Token token, string? error = "AUTO", string? source = null)
 		{
 			bool result = token.IsValue;
 			if (error == "AUTO")
 				error = $"Token '[{token.Text}]' is not value, at";
-			if (!result && error != null)
+			if (!result && error is not null)
 				token.Error(error, source);
 			return result;
 		}
@@ -375,8 +375,6 @@ namespace NipahTokenizer
 					return "$";
 				case TokenType.TrueLiteral:
 					return "true";
-				case TokenType.VoidLiteral:
-					return "void";
 			}
 			return type.ToString();
 		}
