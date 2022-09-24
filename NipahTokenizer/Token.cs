@@ -45,7 +45,6 @@ namespace NipahTokenizer
 		public bool IsConditional => Tokenizer.IsConditional(Type) || Text.ToLower() == "xor";
 		public bool IsId => Type == TokenType.ID;
 		public bool AnyClosure => Type == TokenType.EOF
-												   || Type == TokenType.LineBreak
 												   || Type == TokenType.Comma
 												   || IsConditional
 												   || IsComparer
@@ -254,7 +253,7 @@ namespace NipahTokenizer
 
 		public override bool Equals(object? obj)
 		{
-			return obj is Token && Equals((Token)obj);
+			return obj is Token token && Equals(token);
 		}
 
 		public override int GetHashCode()
@@ -276,7 +275,7 @@ namespace NipahTokenizer
 	public static class TokenHelper
 	{
 		public static bool Assert(this Token token, TokenType type, string error = "AUTO",
-								 string source = null)
+								 string? source = null)
 		{
 			bool result = token.Type == type;
 			if (error == "AUTO")
@@ -286,7 +285,7 @@ namespace NipahTokenizer
 			return result;
 		}
 		public static bool Assert(this Token token, string text, string error = "AUTO",
-								  string source = null)
+								  string? source = null)
 		{
 			bool result = token.Text == text;
 			if (error == "AUTO")
@@ -295,7 +294,7 @@ namespace NipahTokenizer
 				token.Error(error, source);
 			return result;
 		}
-		public static bool AssertValue(this Token token, string error = "AUTO", string source = null)
+		public static bool AssertValue(this Token token, string error = "AUTO", string? source = null)
 		{
 			bool result = token.IsValue;
 			if (error == "AUTO")
