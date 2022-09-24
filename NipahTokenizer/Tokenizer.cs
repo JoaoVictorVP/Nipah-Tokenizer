@@ -110,7 +110,7 @@ namespace NipahTokenizer
 		public event Action<List<SplitItem>>? SplitProcessor;
 		public event Action<Token>? TokenProcessor;
 		public static event SplitProcessor? FinalSplitProcessor;
-		public List<Token> Tokenize(string entry, TokenizerOptions options, bool removeLineBreaks = true)
+		public List<Token> Tokenize(string entry, TokenizerOptions options)
 		{
 			//entry = entry.Replace("\n","");
 			entry = entry.Replace("\r", "");
@@ -134,8 +134,6 @@ namespace NipahTokenizer
 					token = token with { Value = str };
                 }
 			}
-			if (removeLineBreaks)
-				tokens.RemoveAll(token => token.Type == TokenType.LineBreak);
 			TokensProcessor?.Invoke(tokens);
 			return tokens;
 		}

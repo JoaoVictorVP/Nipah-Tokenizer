@@ -347,8 +347,6 @@ namespace NipahTokenizer
 					return ">";
 				case TokenType.LargerOrEqual:
 					return ">=";
-				case TokenType.LineBreak:
-					return "\n";
 				case TokenType.Lower:
 					return "<";
 				case TokenType.LowerOrEqual:
@@ -403,21 +401,30 @@ namespace NipahTokenizer
 		}
 		public static Queue<Token> Insert(this Queue<Token> tokens, int index, Token token)
 		{
-			List<Token> toks = new List<Token>(tokens);
+			var toks = Lists<Token>.Get();
+			toks.AddRange(tokens);
 			toks.Insert(index, token);
-			return new Queue<Token>(toks);
+			var q = new Queue<Token>(toks);
+			GSPool.Return(toks);
+			return q;
 		}
 		public static Queue<Token> Remove(this Queue<Token> tokens, Token token)
 		{
-			List<Token> toks = new List<Token>(tokens);
+			var toks = GSPool.Get<List<Token>>();
+			toks.AddRange(tokens);
 			toks.Remove(token);
-			return new Queue<Token>(toks);
+			var q = new Queue<Token>(toks);
+			GSPool.Return(toks);
+			return q;
 		}
 		public static Queue<Token> RemoveAt(this Queue<Token> tokens, int index)
 		{
-			List<Token> toks = new List<Token>(tokens);
+			var toks = GSPool.Get<List<Token>>();
+			toks.AddRange(tokens);
 			toks.RemoveAt(index);
-			return new Queue<Token>(toks);
+			var q = new Queue<Token>(toks);
+			GSPool.Return(toks, t => t.Clear());
+			return q;
 		}
 	}
 }
