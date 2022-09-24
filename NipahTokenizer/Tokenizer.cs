@@ -328,7 +328,7 @@ namespace NipahTokenizer
 		{
 			var changedAny = false;
 			var outputs = new List<SplitItem>(inputs.Length);
-			var carry = new StringBuilder(32);
+			var carry = StringBuilderPool.Get(32);
 			while (inputs.Length > 0)
 			{
 				bool isMatch = false;
@@ -348,6 +348,7 @@ namespace NipahTokenizer
 					inputs = inputs[1..];
 				}
 			}
+			StringBuilderPool.Return(carry);
 			return (outputs, changedAny);
 		}
 
