@@ -1,5 +1,4 @@
 ﻿using NipahTokenizer;
-using NipahTokenizer.Parsing;
 
 var tokenizer = new Tokenizer();
 var options = TokenizerOptions.Default;
