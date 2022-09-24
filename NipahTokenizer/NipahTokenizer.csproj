@@ -10,8 +10,8 @@
     <PackageIcon>d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg</PackageIcon>
     <PackageIconUrl />
     <PackageReleaseNotes>Refatoração de boa parte do código.
-    Otimizações e correções de problemas.
-  A utilização do tokenizador se tornou significativamente mais simples e customizável.</PackageReleaseNotes>
+Otimizações e correções de problemas.
+A utilização do tokenizador se tornou significativamente mais simples e customizável.</PackageReleaseNotes>
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -20,6 +20,9 @@
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <Version>3.0</Version>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <Title>Nipah Tokenizer</Title>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
