@@ -33,23 +33,6 @@ namespace NipahTokenizer
 		public bool IsComparer => Tokenizer.IsComparisson(Type);
 		public bool IsConditional => Tokenizer.IsConditional(Type) || Text.ToLower() == "xor";
 		public bool IsId => Type == TokenType.ID;
-		public bool AnyClosure => Type == TokenType.EOF
-												   || Type == TokenType.Comma
-												   || IsConditional
-												   || IsComparer
-												   || IsOperator
-												   || IsMathOperator
-												   || Type == TokenType.OpenBrackets
-												   || Type == TokenType.CloseBrackets
-												   || Type == TokenType.OpenSquares
-												   || Type == TokenType.CloseSquares
-												   || Type == TokenType.End;
-		public bool anyClosure_Open => Type == TokenType.OpenSquares
-														|| Type == TokenType.OpenBrackets
-														|| Type == TokenType.OpenParenthesis;
-		public bool anyClosure_Close => Type == TokenType.CloseSquares
-														 || Type == TokenType.CloseBrackets
-														 || Type == TokenType.CloseParenthesis;
 
 		public Token Modify(string text, TokenType type, object value)
 			=> this with { Text = text, Type = type, Value = DynValue.From(value) };
