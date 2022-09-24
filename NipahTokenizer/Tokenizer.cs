@@ -185,9 +185,8 @@ namespace NipahTokenizer
 			else
 				throw new Exception("Out of scaping context");
 		}
-        static void SplitStringScopedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list)
+        static void SplitStringScopedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Scope currentScope)
 		{
-            var scopeDefs = options.Scopes;
             var eofs = options.EOFs;
 
             int count = text.Length;
@@ -203,17 +202,14 @@ namespace NipahTokenizer
 					continue;
 
 				// Check for end of scope
-				foreach (var scoper in scopeDefs)
+				if(currentScope.End == c)
 				{
-					if(scoper.End == c)
-					{
-						var item = new SplitItem(current.ToString(), position, line);
-						list.Add(item);
-                        ProcessPositionAndEOF(c, ref position, ref line, eofs);
-						StringBuilderPool.Return(current);
-						return;
-                    }
-				}
+					var item = new SplitItem(current.ToString(), position, line);
+					list.Add(item);
+                    ProcessPositionAndEOF(c, ref position, ref line, eofs);
+					StringBuilderPool.Return(current);
+					return;
+                }
 				// Check for escaping
 				if (c is '\\')
 				{
@@ -285,7 +281,7 @@ namespace NipahTokenizer
 					if(scoper.Begin == c)
 					{
 						current.Clear();
-						SplitStringScopedMode(text, ref index, ref position, ref line, options, list);
+						SplitStringScopedMode(text, ref index, ref position, ref line, options, list, scoper);
 						break;
 					}
                 }
