@@ -72,7 +72,6 @@ namespace NipahTokenizer
 
 		public static implicit operator string(Token token) => token.Text;
 		public static implicit operator TokenType(Token token) => token.Type;
-		//public static implicit operator bool (Token token) => token != null;
 
 		public static Token Build(SplitItem item)
 		{
