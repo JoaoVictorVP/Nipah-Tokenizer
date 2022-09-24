@@ -109,7 +109,6 @@ namespace NipahTokenizer
 		public event Action<List<Token>>? TokensProcessor;
 		public event Action<List<SplitItem>>? SplitProcessor;
 		public event Action<Token>? TokenProcessor;
-		public static event SplitProcessor? FinalSplitProcessor;
 		public List<Token> Tokenize(string entry, TokenizerOptions options)
 		{
 			//entry = entry.Replace("\n","");
