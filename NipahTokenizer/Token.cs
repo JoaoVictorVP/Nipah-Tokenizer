@@ -204,7 +204,7 @@ namespace NipahTokenizer
 		public static bool IsValidIdentifier(string text) => tryID(text);
 		static bool tryID(string text)
 		{
-			if (text == "" || text == null)
+			if (text is "" or null)
 				return false;
 			if (char.IsDigit(text[0]))
 				return false;
@@ -212,7 +212,7 @@ namespace NipahTokenizer
 				return false;
 			foreach (var c in text)
 			{
-				if (char.IsDigit(c) || char.IsLetter(c) || c == '_' || c == '.')
+				if (char.IsDigit(c) || char.IsLetter(c) || c is '_' or '.')
 					continue;
 				return false;
 			}
