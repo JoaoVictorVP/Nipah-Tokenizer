@@ -13,7 +13,8 @@
 More optimizations and bugfixes.
 Adding option to use parallelism to tokenize larger texts (can reach +50% speed), results in less accurate tokenization but good.
 Switching to struct split item (less heap memory usage).
-Switching to use chars directly instead Regex (+80% speed).</PackageReleaseNotes>
+Switching to use chars directly instead Regex (+80% speed).
+- fast fix</PackageReleaseNotes>
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>AnyCPU;X64</Platforms>
@@ -21,7 +22,7 @@ Switching to use chars directly instead Regex (+80% speed).</PackageReleaseNotes
 
   <PropertyGroup>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <Version>3.1</Version>
+    <Version>3.1.1</Version>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <Title>Nipah Tokenizer</Title>
     <IncludeSymbols>True</IncludeSymbols>
