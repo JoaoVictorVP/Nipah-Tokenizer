@@ -7,7 +7,7 @@ var options = new TokenizerOptions(
         Array.Empty<Scope>(),
         Array.Empty<EndOfLine>(),
         Array.Empty<SplitAggregator>(),
-        Parallel: false);
+        Parallel: true);
 string text = File.ReadAllText(Console.ReadLine());
 //string text = "Hello, World!!!";
 List<Token> tokens;
