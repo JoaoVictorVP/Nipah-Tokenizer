@@ -365,7 +365,7 @@ namespace NipahTokenizer
                             }
                             case IncludeMode.Separate:
                             {
-                                var item = new SplitItem(current.ToString()[..^1], (position - 1), line);
+                                var item = new SplitItem(current.Length is 0 ? "" : current.ToString()[..^1], (position - 1), line);
                                 var sepItem = new SplitItem(sep.MatchAsString, position, line);
                                 list.Add(item);
                                 list.Add(sepItem);
@@ -374,7 +374,7 @@ namespace NipahTokenizer
                             }
                             case IncludeMode.None:
                             {
-                                var item = new SplitItem(current.ToString()[..^1], (position - 1), line);
+                                var item = new SplitItem(current.Length is 0 ? "" : current.ToString()[..^1], (position - 1), line);
                                 list.Add(item);
                                 current.Clear();
                                 break;
