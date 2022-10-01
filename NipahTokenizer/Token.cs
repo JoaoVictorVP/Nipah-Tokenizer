@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 #nullable enable
 
@@ -34,10 +35,12 @@ namespace NipahTokenizer
 		public bool IsConditional => Tokenizer.IsConditional(Type) || Text.ToLower() == "xor";
 		public bool IsId => Type == TokenType.ID;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Token Modify<T>(string text, TokenType type, T value)
             => this with { Text = text, Type = type, Value = DynValue.From(value) };
 
-		public Token WithValue<T>(T value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public Token WithValue<T>(T value)
 			=> this with { Value = DynValue.From(value) };
 
         public void Error()
@@ -76,7 +79,14 @@ namespace NipahTokenizer
 		public static implicit operator string(Token token) => token.Text;
 		public static implicit operator TokenType(Token token) => token.Type;
 
-		public static Token Build(SplitItem item)
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		public static Token BuildRaw(in SplitItem item)
+		{
+			return new Token(item.text, TokenType.Any, item.position, item.line);
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Token Build(in SplitItem item)
 		{
 			string text = item.text;
 			object? value = null;

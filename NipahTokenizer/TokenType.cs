@@ -7,6 +7,11 @@ namespace NipahTokenizer
 		None,
 
 		/// <summary>
+		/// Can represent any token (raw)
+		/// </summary>
+		Any,
+
+		/// <summary>
 		/// The email token '@'
 		/// </summary>
 		Email,

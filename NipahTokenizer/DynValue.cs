@@ -7,6 +7,7 @@ namespace NipahTokenizer;
 
 public unsafe struct DynValue
 {
+    public static readonly DynValue None = new();
     fixed byte dat[8];
     object _ref;
     DynType type;
@@ -16,6 +17,7 @@ public unsafe struct DynValue
     #region From
     public static DynValue From<T>(T value)
     {
+        if (value is null) return None;
         var dyn = new DynValue();
         dyn.Set(value);
         return dyn;

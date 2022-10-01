@@ -18,12 +18,14 @@ namespace NipahTokenizer;
 /// <param name="Scopes">The scope delimiters for the tokenizer to use</param>
 /// <param name="EOFs">The end of line delimitators</param>
 /// <param name="Aggregators">The aggregators to pipeline some tokens and produce others sequentially</param>
+/// <param name="LetRawTokens">Should use raw tokens instead of processed ones?<br/>Raw tokens are tokens that had not their values processed in any way, thus they will be always of type Any and their values will be only inexistent.</param>
 /// <param name="Parallel">Parallelize the tokenization?<br/>If true you can reach gains up to 50% of performance in larger texts, but at the cost of producing less precise tokenizations as result of the fast text splitting in chunks before tokenization.<br/>If false you can still reach better speeds if the inputs are small because of the inherent overhead of threading.</param>
 public record TokenizerOptions(
     Separator[] Separators, 
     Scope[] Scopes, 
     EndOfLine[] EOFs, 
     SplitAggregator[] Aggregators, 
+    bool LetRawTokens = false,
     bool Parallel = false)
 {
     public static readonly Separator[] DefaultSeparators = new[]

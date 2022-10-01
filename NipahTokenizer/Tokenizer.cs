@@ -120,24 +120,29 @@ namespace NipahTokenizer
                 var pieces = SplitString(entry, options, sbpool);
                 var tokens = new List<Token>(pieces.Count);
                 SplitProcessor?.Invoke(pieces);
-                foreach (var piece in pieces)
+                var spieces = CollectionsMarshal.AsSpan(pieces);
+                foreach (ref var piece in spieces)
                 {
-                    var token = Token.Build(piece);
-                    TokenProcessor?.Invoke(token);
+                    Token token;
+                    if (options.LetRawTokens)
+                        token = Token.BuildRaw(in piece);
+                    else
+                    {
+                        token = Token.Build(in piece);
+                        TokenProcessor?.Invoke(token);
+                        // Further
+                        string? str = token.Value.TrySolve<string>().Solve();
+                        if (str is not null)
+                        {
+                            str = str.Replace("''", "\"");
+                            str = str.Replace('£', '\'');
+                            token = token with { Value = str };
+                        }
+                    }
                     tokens.Add(token);
                 }
-                var sptokens = CollectionsMarshal.AsSpan(tokens);
-                foreach (ref var token in sptokens)
-                {
-                    string? str = token.Value.TrySolve<string>().Solve();
-                    if (str is not null)
-                    {
-                        str = str.Replace("''", "\"");
-                        str = str.Replace('£', '\'');
-                        token = token with { Value = str };
-                    }
-                }
-                TokensProcessor?.Invoke(tokens);
+                if (options.LetRawTokens is false)
+                    TokensProcessor?.Invoke(tokens);
 
                 return tokens;
             }
@@ -180,24 +185,29 @@ namespace NipahTokenizer
                 Parallel.ForEach(piecesChunks, pieces =>
                 {
                     var tokens = new List<Token>(32);
-                    foreach (var piece in pieces.Value)
+                    var spieces = CollectionsMarshal.AsSpan(pieces.Value);
+                    foreach (ref var piece in spieces)
                     {
-                        var token = Token.Build(piece);
-                        TokenProcessor?.Invoke(token);
+                        Token token;
+                        if (options.LetRawTokens)
+                            token = Token.BuildRaw(in piece);
+                        else
+                        {
+                            token = Token.Build(in piece);
+                            TokenProcessor?.Invoke(token);
+                            // Further
+                            string? str = token.Value.TrySolve<string>().Solve();
+                            if (str is not null)
+                            {
+                                str = str.Replace("''", "\"");
+                                str = str.Replace('£', '\'');
+                                token = token with { Value = str };
+                            }
+                        }
                         tokens.Add(token);
                     }
-                    var sptokens = CollectionsMarshal.AsSpan(tokens);
-                    foreach (ref var token in sptokens)
-                    {
-                        string? str = token.Value.TrySolve<string>().Solve();
-                        if (str is not null)
-                        {
-                            str = str.Replace("''", "\"");
-                            str = str.Replace('£', '\'');
-                            token = token with { Value = str };
-                        }
-                    }
-                    TokensProcessor?.Invoke(tokens);
+                    if (options.LetRawTokens)
+                        TokensProcessor?.Invoke(tokens);
                     lock (outputs) { outputs.Add(pieces.Key, tokens); }
                 });
 
