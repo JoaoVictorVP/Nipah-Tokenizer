@@ -22,7 +22,7 @@ public record TokenizerOptions(
     Scope[] Scopes, 
     EndOfLine[] EOFs, 
     SplitAggregator[] Aggregators, 
-    bool Parallel)
+    bool Parallel = false)
 {
     public static readonly Separator[] DefaultSeparators = new[]
     {

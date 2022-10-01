@@ -15,6 +15,7 @@ A utilização do tokenizador se tornou significativamente mais simples e custom
 (.NET 6.0+)</PackageReleaseNotes>
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Platforms>AnyCPU;X64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,6 +30,10 @@ A utilização do tokenizador se tornou significativamente mais simples e custom
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\Furude Rika\source\repos\Nipah Tokenizer\NipahTokenizer\NipahTokenizer.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
     <DocumentationFile>C:\Users\Furude Rika\source\repos\Nipah Tokenizer\NipahTokenizer\NipahTokenizer.xml</DocumentationFile>
   </PropertyGroup>
 

@@ -169,8 +169,9 @@ namespace NipahTokenizer
                     {
                         int largest = findLargestLine(piecesChunks[i - 1]);
                         lineMatcher += largest;
-                        foreach (var piece in pieces)
-                            piece.line += lineMatcher;
+                        var spanPieces = CollectionsMarshal.AsSpan(pieces);
+                        foreach (ref var piece in spanPieces)
+                            piece = new SplitItem(piece.text, piece.position, piece.line + lineMatcher);
                     }
                 }
 
@@ -304,7 +305,7 @@ namespace NipahTokenizer
                     var item = new SplitItem(current.ToString(), position, line);
                     list.Add(item);
                     ProcessPositionAndEOF(c, ref position, ref line, eofs);
-                    StringBuilderPool.Return(current);
+                    sbpool.Return(current);
                     return;
                 }
                 // Check for escaping
@@ -404,8 +405,6 @@ namespace NipahTokenizer
             int position = 0;
             int line = 0;
 
-            var scopes = new Stack<long>(32);
-
             SplitStringNormalMode(text, ref index, ref position, ref line, options, list, sbpool);
 
             list.RemoveAll(x => x.text is "");
@@ -460,11 +459,11 @@ namespace NipahTokenizer
             return true;
         }
     }
-    public class SplitItem
+    public readonly struct SplitItem
     {
-        public string text;
-        public int position;
-        public int line;
+        public readonly string text;
+        public readonly int position;
+        public readonly int line;
 
         public static implicit operator string(SplitItem item) => item.text;
 
