@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using S = NipahTokenizer.Separator;
 
 #nullable enable
@@ -113,29 +114,92 @@ namespace NipahTokenizer
 		{
 			//entry = entry.Replace("\n","");
 			entry = entry.Replace("\r", "");
-			var tokens = new List<Token>();
-			var pieces = SplitString(entry, options);
-			SplitProcessor?.Invoke(pieces);
-			foreach (var piece in pieces)
+			// var tokens = new List<Token>();
+
+			// Splits the text at chunks in parallel
+			int cores = Environment.ProcessorCount;
+			string[] entries = SplitChunks(entry, cores);
+			var piecesChunks = new Dictionary<int, List<SplitItem>>(cores);
+			Parallel.ForEach(entries, (entry, state, index) =>
 			{
-				var token = Token.Build(piece);
-				TokenProcessor?.Invoke(token);
-				tokens.Add(token);
-			}
-			var sptokens = CollectionsMarshal.AsSpan(tokens);
-			foreach(ref var token in sptokens)
-			{
-				string? str = token.Value.TrySolve<string>().Solve();
-				if (str is not null)
-				{
-					str = str.Replace("''", "\"");
-                    str = str.Replace('£', '\'');
-					token = token with { Value = str };
+				var sbpool = new LocalStringBuilderPool();
+				var pieces = SplitString(entry, options, sbpool);
+                SplitProcessor?.Invoke(pieces);
+				lock(piecesChunks) { piecesChunks.Add((int)index, pieces); }
+            });
+
+			// Adjust the lines of the chunk pieces
+            static int findLargestLine(List<SplitItem> pieces) => pieces.Count > 0 ? pieces[^1].line : 0;
+
+            int lineMatcher = 0;
+            for (int i = 0; i < piecesChunks.Count; i++)
+            {
+                List<SplitItem>? pieces = piecesChunks[i];
+                if (i > 0)
+                {
+                    int largest = findLargestLine(piecesChunks[i - 1]);
+                    lineMatcher += largest;
+                    foreach (var piece in pieces)
+                        piece.line += lineMatcher;
                 }
-			}
-			TokensProcessor?.Invoke(tokens);
+            }
+
+			// Processes the split items as token outputs, then aggregates them and returns the result
+            var outputs = new Dictionary<int, List<Token>>(32);
+            Parallel.ForEach(piecesChunks, pieces =>
+			{
+                var tokens = new List<Token>(32);
+                foreach (var piece in pieces.Value)
+                {
+                    var token = Token.Build(piece);
+                    TokenProcessor?.Invoke(token);
+                    tokens.Add(token);
+                }
+                var sptokens = CollectionsMarshal.AsSpan(tokens);
+                foreach (ref var token in sptokens)
+                {
+                    string? str = token.Value.TrySolve<string>().Solve();
+                    if (str is not null)
+                    {
+                        str = str.Replace("''", "\"");
+                        str = str.Replace('£', '\'');
+                        token = token with { Value = str };
+                    }
+                }
+                TokensProcessor?.Invoke(tokens);
+                lock (outputs) { outputs.Add(pieces.Key, tokens); }
+            });
+
+			var tokens = new List<Token>(320);
+			for(int i = 0; i < outputs.Count; i++)
+				tokens.AddRange(outputs[i]);
+
 			return tokens;
 		}
+
+		static string[] SplitChunks(string text, int chunks)
+		{
+			recalc:
+			int size = text.Length;
+			int chunkSize = size / chunks;
+			if(chunkSize * chunks != size)
+			{
+				chunks -= 1;
+				goto recalc;
+			}
+
+			string[] realChunks = new string[chunks];
+
+			for(int i = 0; i < chunks; i++)
+			{
+				int fromIndex = i * chunkSize;
+				int toIndex = (i + 1) * chunkSize;
+				realChunks[i] = text[fromIndex..toIndex];
+			}
+
+			return realChunks;
+		}
+
 		public static void GeneralizeValue(List<Token> tokens)
 		{
             var sptokens = CollectionsMarshal.AsSpan(tokens);
@@ -184,12 +248,12 @@ namespace NipahTokenizer
 			else
 				throw new Exception("Out of scaping context");
 		}
-        static void SplitStringScopedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Scope currentScope)
+        static void SplitStringScopedMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, Scope currentScope, LocalStringBuilderPool sbpool)
 		{
             var eofs = options.EOFs;
 
             int count = text.Length;
-			var current = StringBuilderPool.Get(320);
+			var current = sbpool.Get(320);
 
 			int selfIndex = index;
 			for(index = selfIndex; index < count; index++)
@@ -220,9 +284,9 @@ namespace NipahTokenizer
             }
 			if(current.Length > 0)
 				list.Add(new(current.ToString(), position, line));
-			StringBuilderPool.Return(current);
+            sbpool.Return(current);
 		}
-		static void SplitStringNormalMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list)
+		static void SplitStringNormalMode(string text, ref int index, ref int position, ref int line, TokenizerOptions options, List<SplitItem> list, LocalStringBuilderPool sbpool)
 		{
             var separators = options.Separators;
             var scopeDefs = options.Scopes;
@@ -230,7 +294,7 @@ namespace NipahTokenizer
 
             int count = text.Length;
 
-            var current = StringBuilderPool.Get(320);
+            var current = sbpool.Get(320);
 
 			int selfIndex = index;
             for (index = selfIndex; index < count; index++)
@@ -280,7 +344,7 @@ namespace NipahTokenizer
 					if(scoper.Begin == c)
 					{
 						current.Clear();
-						SplitStringScopedMode(text, ref index, ref position, ref line, options, list, scoper);
+						SplitStringScopedMode(text, ref index, ref position, ref line, options, list, scoper, sbpool);
 						break;
 					}
                 }
@@ -295,10 +359,10 @@ namespace NipahTokenizer
             }
             if (current.Length > 0)
                 list.Add(new(current.ToString(), position, line));
-			StringBuilderPool.Return(current);
+			sbpool.Return(current);
         }
 
-		public static List<SplitItem> SplitString(string text, TokenizerOptions options)
+		public static List<SplitItem> SplitString(string text, TokenizerOptions options, LocalStringBuilderPool sbpool)
 		{
 			var list = new List<SplitItem>(32);
 
@@ -308,22 +372,22 @@ namespace NipahTokenizer
 
 			var scopes = new Stack<long>(32);
 
-			SplitStringNormalMode(text, ref index, ref position, ref line, options, list);
+			SplitStringNormalMode(text, ref index, ref position, ref line, options, list, sbpool);
 
 			list.RemoveAll(x => x.text is "");
 
 			// Will apply aggregators until no more changes can occur
 			bool anyChanged;
-			while (((list, anyChanged) = ApplyAggregators(CollectionsMarshal.AsSpan(list), options.Aggregators)).anyChanged)
+			while (((list, anyChanged) = ApplyAggregators(CollectionsMarshal.AsSpan(list), options.Aggregators, sbpool)).anyChanged)
 				continue;
 
 			return list;
 		}
-		static (List<SplitItem> outputs, bool changedAny) ApplyAggregators(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<SplitAggregator> aggregators)
+		static (List<SplitItem> outputs, bool changedAny) ApplyAggregators(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<SplitAggregator> aggregators, LocalStringBuilderPool sbpool)
 		{
 			var changedAny = false;
 			var outputs = new List<SplitItem>(inputs.Length);
-			var carry = StringBuilderPool.Get(32);
+			var carry = sbpool.Get(32);
 			while (inputs.Length > 0)
 			{
 				bool isMatch = false;
@@ -343,7 +407,7 @@ namespace NipahTokenizer
 					inputs = inputs[1..];
 				}
 			}
-			StringBuilderPool.Return(carry);
+            sbpool.Return(carry);
 			return (outputs, changedAny);
 		}
 

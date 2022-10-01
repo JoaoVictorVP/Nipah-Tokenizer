@@ -8,25 +8,28 @@ namespace NipahTokenizer;
 
 public static class StringBuilderPool
 {
-    static readonly Queue<StringBuilder> pool = new(32);
+    public static LocalStringBuilderPool Pool => pool;
+    static readonly LocalStringBuilderPool pool = new();
 
     public static StringBuilder Get(int defCapacity = 32)
     {
-        return pool.Count is 0 
-            ? (new(defCapacity)) 
-            : pool.Dequeue();
+        lock (pool)
+        {
+            return pool.Get(defCapacity);
+        }
     }
     public static void Return(StringBuilder builder)
     {
-        builder.Clear();
-        pool.Enqueue(builder);
+        lock (pool)
+        {
+            pool.Return(builder);
+        }
     }
     public static string BuildAndReturn(StringBuilder builder)
     {
-        string product = builder.ToString();
-        builder.Clear();
-        pool.Enqueue(builder);
-
-        return product;
+        lock (pool)
+        {
+            return pool.BuildAndReturn(builder);
+        }
     }
 }
