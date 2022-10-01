@@ -50,11 +50,13 @@ public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine
 
 public class Separator
 {
+    public readonly char SingleChar;
     public readonly Regex Match;
     public readonly IncludeMode Include;
 
     public Separator(string match, IncludeMode include = IncludeMode.Separate)
     {
+        SingleChar = match.Length is 1 ? match[0] : '\0';
         Match = new Regex(match, RegexOptions.Compiled);
         Include = include;
     }
