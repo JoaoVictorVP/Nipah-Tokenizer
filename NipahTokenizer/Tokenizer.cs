@@ -341,8 +341,8 @@ namespace NipahTokenizer
                 // Check for separators
                 foreach (var sep in separators)
                 {
-                    var match = sep.Match.Match(current.ToString());
-                    if (match.Success)
+                    bool isMatch = sep.Match == c;
+                    if (isMatch)
                     {
                         switch (sep.Include)
                         {
@@ -355,8 +355,8 @@ namespace NipahTokenizer
                             }
                             case IncludeMode.Separate:
                             {
-                                var item = new SplitItem(current.ToString()[..match.Index], (position - match.Length), line);
-                                var sepItem = new SplitItem(match.Value, position, line);
+                                var item = new SplitItem(current.ToString()[..^1], (position - 1), line);
+                                var sepItem = new SplitItem(sep.MatchAsString, position, line);
                                 list.Add(item);
                                 list.Add(sepItem);
                                 current.Clear();
@@ -364,7 +364,7 @@ namespace NipahTokenizer
                             }
                             case IncludeMode.None:
                             {
-                                var item = new SplitItem(current.ToString()[..match.Index], (position - match.Length), line);
+                                var item = new SplitItem(current.ToString()[..^1], (position - 1), line);
                                 list.Add(item);
                                 current.Clear();
                                 break;

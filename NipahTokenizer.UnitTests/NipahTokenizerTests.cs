@@ -11,7 +11,7 @@ public class NipahTokenizerTests
     {
         // Arrange
         var options = new TokenizerOptions(
-            new Separator[] { new(" ", IncludeMode.None), new("\\,"), new("\\!") }, 
+            new Separator[] { new(' ', IncludeMode.None), new(','), new('!') }, 
             Array.Empty<Scope>(), 
             Array.Empty<EndOfLine>(), 
             Array.Empty<SplitAggregator>());
@@ -30,7 +30,7 @@ public class NipahTokenizerTests
     {
         // Arrange
         var options = new TokenizerOptions(
-            new Separator[] { new(" ", IncludeMode.None), new("\\,"), new("\\!") },
+            new Separator[] { new(' ', IncludeMode.None), new(','), new('!') },
             new Scope[] { new('"', '"'), new('\'', '\'') },
             Array.Empty<EndOfLine>(),
             Array.Empty<SplitAggregator>());
@@ -49,7 +49,7 @@ public class NipahTokenizerTests
     {
         // Arrange
         var options = new TokenizerOptions(
-            new Separator[] { new(" ", IncludeMode.None), new("\\,"), new("\\!"), new("\\\n") },
+            new Separator[] { new(' ', IncludeMode.None), new(','), new('!'), new('\n') },
             Array.Empty<Scope>(),
             new EndOfLine[] { new('\n') },
             Array.Empty<SplitAggregator>());
@@ -70,7 +70,7 @@ Life is truly great!";
     {
         // Arrange
         var options = new TokenizerOptions(
-            new Separator[] { new(" ", IncludeMode.None), new("\\,"), new("\\!") },
+            new Separator[] { new(' ', IncludeMode.None), new(','), new('!') },
             new Scope[] { new('"', '"'), new('\'', '\'') },
             Array.Empty<EndOfLine>(),
             Array.Empty<SplitAggregator>());
@@ -89,7 +89,7 @@ Life is truly great!";
     {
         // Arrange
         var options = new TokenizerOptions(
-            new Separator[] { new(" ", IncludeMode.None), new("\\,"), new("\\!") },
+            new Separator[] { new(' ', IncludeMode.None), new(','), new('!') },
             new Scope[] { new('"', '"'), new('\'', '\'') },
             Array.Empty<EndOfLine>(),
             Array.Empty<SplitAggregator>());

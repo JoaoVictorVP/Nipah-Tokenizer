@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using S = NipahTokenizer.Separator;
 
+#nullable enable
+
 namespace NipahTokenizer;
 
 /// <summary>
@@ -26,14 +28,14 @@ public record TokenizerOptions(
 {
     public static readonly Separator[] DefaultSeparators = new[]
     {
-        new S(" ", IncludeMode.None), new S("\t", IncludeMode.None),
+        new S(' ', IncludeMode.None), new S('\t', IncludeMode.None),
 
-        new S("\\*"), new S("\\/"), new S("\\+"), new S("\\-"),
-        new S("\\("), new S("\\)"), new S("\n"), new S("\\,"), new S("\\;"),
-        new S("\\="), new S("\\{"), new S("\\}"),
-        new S("\\["), new S("\\]"), new S("\\:"), new S("\\<"), new S("\\>"),
-        new S("\\&"), new S("\\|"), new S("\\$"), new S("\\@"), new S("\\."), new S("\\#"),
-        new S("\\!"), new S("\\?")
+        new S('*'), new S('/'), new S('+'), new S('-'),
+        new S('('), new S(')'), new S('\n'), new S(','), new S(';'),
+        new S('='), new S('{'), new S('}'),
+        new S('['), new S(']'), new S(':'), new S('<'), new S('>'),
+        new S('&'), new S('|'), new S('$'), new S('@'), new S('.'), new S('#'),
+        new S('!'), new S('?')
     };
     public static readonly Scope[] DefaultScopes = new Scope[]
     {
@@ -63,14 +65,14 @@ public record TokenizerOptions(
 
 public class Separator
 {
-    public readonly char SingleChar;
-    public readonly Regex Match;
+    public readonly char Match;
     public readonly IncludeMode Include;
+    string? matchAsString = null;
+    public string MatchAsString => matchAsString ??= Match.ToString();
 
-    public Separator(string match, IncludeMode include = IncludeMode.Separate)
+    public Separator(char match, IncludeMode include = IncludeMode.Separate)
     {
-        SingleChar = match.Length is 1 ? match[0] : '\0';
-        Match = new Regex(match, RegexOptions.Compiled);
+        Match = match;
         Include = include;
     }
 }
