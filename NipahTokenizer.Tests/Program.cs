@@ -6,8 +6,10 @@ var options = new TokenizerOptions(
         TokenizerOptions.DefaultSeparators,
         Array.Empty<Scope>(),
         Array.Empty<EndOfLine>(),
-        Array.Empty<SplitAggregator>());
+        Array.Empty<SplitAggregator>(),
+        Parallel: true);
 string text = File.ReadAllText(Console.ReadLine());
+//string text = "Hello, World!!!";
 List<Token> tokens;
 tokens = tokenizer.Tokenize(text, options);
 var sw = new Stopwatch();

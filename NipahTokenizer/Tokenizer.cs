@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -112,44 +113,14 @@ namespace NipahTokenizer
         public event Action<Token>? TokenProcessor;
         public List<Token> Tokenize(string entry, TokenizerOptions options)
         {
-            //entry = entry.Replace("\n","");
-            entry = entry.Replace("\r", "");
-            // var tokens = new List<Token>();
-
-            // Splits the text at chunks in parallel
-            int cores = Environment.ProcessorCount;
-            string[] entries = SplitChunks(entry, cores, options);
-            var piecesChunks = new Dictionary<int, List<SplitItem>>(cores);
-            Parallel.ForEach(entries, (entry, state, index) =>
+            List<Token> TokenizeNormal()
             {
-                var sbpool = new LocalStringBuilderPool();
+                entry = entry.Replace("\r", "");
+                var sbpool = StringBuilderPool.Pool;
                 var pieces = SplitString(entry, options, sbpool);
+                var tokens = new List<Token>(pieces.Count);
                 SplitProcessor?.Invoke(pieces);
-                lock (piecesChunks) { piecesChunks.Add((int)index, pieces); }
-            });
-
-            // Adjust the lines of the chunk pieces
-            static int findLargestLine(List<SplitItem> pieces) => pieces.Count > 0 ? pieces[^1].line : 0;
-
-            int lineMatcher = 0;
-            for (int i = 0; i < piecesChunks.Count; i++)
-            {
-                List<SplitItem>? pieces = piecesChunks[i];
-                if (i > 0)
-                {
-                    int largest = findLargestLine(piecesChunks[i - 1]);
-                    lineMatcher += largest;
-                    foreach (var piece in pieces)
-                        piece.line += lineMatcher;
-                }
-            }
-
-            // Processes the split items as token outputs, then aggregates them and returns the result
-            var outputs = new Dictionary<int, List<Token>>(32);
-            Parallel.ForEach(piecesChunks, pieces =>
-            {
-                var tokens = new List<Token>(32);
-                foreach (var piece in pieces.Value)
+                foreach (var piece in pieces)
                 {
                     var token = Token.Build(piece);
                     TokenProcessor?.Invoke(token);
@@ -167,19 +138,81 @@ namespace NipahTokenizer
                     }
                 }
                 TokensProcessor?.Invoke(tokens);
-                lock (outputs) { outputs.Add(pieces.Key, tokens); }
-            });
 
-            var tokens = new List<Token>(320);
-            for (int i = 0; i < outputs.Count; i++)
-                tokens.AddRange(outputs[i]);
+                return tokens;
+            }
 
-            return tokens;
+            List<Token> TokenizeParallel()
+            {
+                entry = entry.Replace("\r", "");
+
+                // Splits the text at chunks in parallel
+                int cores = Environment.ProcessorCount;
+                string[] entries = SplitChunks(entry, cores);
+                var piecesChunks = new Dictionary<int, List<SplitItem>>(cores);
+                Parallel.ForEach(entries, (entry, state, index) =>
+                {
+                    var sbpool = new LocalStringBuilderPool();
+                    var pieces = SplitString(entry, options, sbpool);
+                    SplitProcessor?.Invoke(pieces);
+                    lock (piecesChunks) { piecesChunks.Add((int)index, pieces); }
+                });
+
+                // Adjust the lines of the chunk pieces
+                static int findLargestLine(List<SplitItem> pieces) => pieces.Count > 0 ? pieces[^1].line : 0;
+
+                int lineMatcher = 0;
+                for (int i = 0; i < piecesChunks.Count; i++)
+                {
+                    List<SplitItem>? pieces = piecesChunks[i];
+                    if (i > 0)
+                    {
+                        int largest = findLargestLine(piecesChunks[i - 1]);
+                        lineMatcher += largest;
+                        foreach (var piece in pieces)
+                            piece.line += lineMatcher;
+                    }
+                }
+
+                // Processes the split items as token outputs, then aggregates them and returns the result
+                var outputs = new Dictionary<int, List<Token>>(32);
+                Parallel.ForEach(piecesChunks, pieces =>
+                {
+                    var tokens = new List<Token>(32);
+                    foreach (var piece in pieces.Value)
+                    {
+                        var token = Token.Build(piece);
+                        TokenProcessor?.Invoke(token);
+                        tokens.Add(token);
+                    }
+                    var sptokens = CollectionsMarshal.AsSpan(tokens);
+                    foreach (ref var token in sptokens)
+                    {
+                        string? str = token.Value.TrySolve<string>().Solve();
+                        if (str is not null)
+                        {
+                            str = str.Replace("''", "\"");
+                            str = str.Replace('£', '\'');
+                            token = token with { Value = str };
+                        }
+                    }
+                    TokensProcessor?.Invoke(tokens);
+                    lock (outputs) { outputs.Add(pieces.Key, tokens); }
+                });
+
+                var tokens = new List<Token>(320);
+                for (int i = 0; i < outputs.Count; i++)
+                    tokens.AddRange(outputs[i]);
+
+                return tokens;
+            }
+            return options.Parallel 
+                ? TokenizeParallel() 
+                : TokenizeNormal();
         }
 
-        static string[] SplitChunks(string text, int chunks, TokenizerOptions options)
+        static string[] SplitChunks(string text, int chunks)
         {
-            var seps = options.Separators;
         recalc:
             int size = text.Length;
             int chunkSize = size / chunks;

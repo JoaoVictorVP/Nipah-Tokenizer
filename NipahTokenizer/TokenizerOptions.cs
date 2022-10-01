@@ -9,7 +9,7 @@ using S = NipahTokenizer.Separator;
 
 namespace NipahTokenizer;
 
-public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine[] EOFs, SplitAggregator[] Aggregators)
+public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine[] EOFs, SplitAggregator[] Aggregators, bool Parallel)
 {
     public static readonly Separator[] DefaultSeparators = new[]
     {
@@ -45,7 +45,7 @@ public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine
         new(x => x is "-", y => long.TryParse(y, out _) || double.TryParse(y, out _))
     };
 
-    public static readonly TokenizerOptions Default = new(DefaultSeparators, DefaultScopes, DefaultEndOfLines, DefaultAggregators);
+    public static readonly TokenizerOptions Default = new(DefaultSeparators, DefaultScopes, DefaultEndOfLines, DefaultAggregators, false);
 }
 
 public class Separator
