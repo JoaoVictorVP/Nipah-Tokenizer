@@ -7,14 +7,14 @@ var options = new TokenizerOptions(
         Array.Empty<Scope>(),
         Array.Empty<EndOfLine>(),
         Array.Empty<SplitAggregator>(),
-        Parallel: true);
+        Parallel: false);
 string text = File.ReadAllText(Console.ReadLine());
 //string text = "Hello, World!!!";
 List<Token> tokens;
 tokens = tokenizer.Tokenize(text, options);
 var sw = new Stopwatch();
 sw.Start();
-for(int i = 0; i < 100; i++)
+for(int i = 0; i < 10; i++)
 {
     tokens = tokenizer.Tokenize(text, options);
 }
