@@ -9,7 +9,20 @@ using S = NipahTokenizer.Separator;
 
 namespace NipahTokenizer;
 
-public record TokenizerOptions(Separator[] Separators, Scope[] Scopes, EndOfLine[] EOFs, SplitAggregator[] Aggregators, bool Parallel)
+/// <summary>
+/// Construct a new instance of tokenizer options
+/// </summary>
+/// <param name="Separators">The separators to be used by tokenizer</param>
+/// <param name="Scopes">The scope delimiters for the tokenizer to use</param>
+/// <param name="EOFs">The end of line delimitators</param>
+/// <param name="Aggregators">The aggregators to pipeline some tokens and produce others sequentially</param>
+/// <param name="Parallel">Parallelize the tokenization?<br/>If true you can reach gains up to 50% of performance in larger texts, but at the cost of producing less precise tokenizations as result of the fast text splitting in chunks before tokenization.<br/>If false you can still reach better speeds if the inputs are small because of the inherent overhead of threading.</param>
+public record TokenizerOptions(
+    Separator[] Separators, 
+    Scope[] Scopes, 
+    EndOfLine[] EOFs, 
+    SplitAggregator[] Aggregators, 
+    bool Parallel)
 {
     public static readonly Separator[] DefaultSeparators = new[]
     {
