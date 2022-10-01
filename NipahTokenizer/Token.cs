@@ -225,7 +225,7 @@ namespace NipahTokenizer
 
 		public override int GetHashCode()
 		{
-			return Text.GetHashCode() + (Type.GetHashCode() + Position.GetHashCode() + Line.GetHashCode() + Value.GetHashCode());
+			return HashCode.Combine(Type, Position, Line, Value);
 		}
 
 		public bool Equals(Token other)
