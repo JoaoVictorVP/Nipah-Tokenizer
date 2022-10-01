@@ -138,7 +138,7 @@ namespace NipahTokenizer
 			}
 			if (type == TokenType.None)
 			{
-				if (text[0] == '"' && text[^1] == '"')
+				if (text.Length > 1 && text[0] == '"' && text[^1] == '"')
 				{
 					type = TokenType.StringLiteral;
 					value = text.Remove(0, 1).Remove(text.Length - 2, 1);
