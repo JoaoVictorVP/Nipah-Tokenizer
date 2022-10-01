@@ -111,12 +111,13 @@ namespace NipahTokenizer
         public event Action<List<Token>>? TokensProcessor;
         public event Action<List<SplitItem>>? SplitProcessor;
         public event Action<Token>? TokenProcessor;
-        public List<Token> Tokenize(string entry, TokenizerOptions options)
+        public List<Token> Tokenize(string entry, TokenizerOptions options, LocalStringBuilderPool? nonParallelStringBuilderPool = null)
         {
             List<Token> TokenizeNormal()
             {
+                nonParallelStringBuilderPool ??= StringBuilderPool.Pool;
                 entry = entry.Replace("\r", "");
-                var sbpool = StringBuilderPool.Pool;
+                var sbpool = nonParallelStringBuilderPool;
                 var pieces = SplitString(entry, options, sbpool);
                 var tokens = new List<Token>(pieces.Count);
                 SplitProcessor?.Invoke(pieces);
