@@ -455,14 +455,13 @@ namespace NipahTokenizer
             return (outputs, changedAny);
         }
 
-        static bool ApplyAggregator(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<Predicate<string>> aggregator, StringBuilder carry, List<SplitItem> outputs)
+        static bool ApplyAggregator(ReadOnlySpan<SplitItem> inputs, ReadOnlySpan<Predicate<string>> aggregator, StringBuilder carry, List<SplitItem> outputs, SplitItem? lastMatched = null)
             => ((aggregator.Length is 0) || (aggregator.Length is 0 && inputs.Length is 0) || aggregator[0](inputs[0]))
             && (inputs.Length >= aggregator.Length)
             && aggregator switch
             {
-                { Length: > 0 } => ApplyAggregator(inputs[1..], aggregator[1..], carry.Append(inputs[0].text), outputs),
-                _ => Add(outputs, new(carry.Length is 0 ? inputs[0].text : carry.ToString(),
-                    inputs[0].position, inputs[0].line))
+                { Length: > 0 } => ApplyAggregator(inputs[1..], aggregator[1..], carry.Append(inputs[0].text), outputs, inputs[0]),
+                _ => Add(outputs, new(carry.ToString(), lastMatched?.position ?? 0, lastMatched?.line ?? 0))
             };
         static bool Add<T>(List<T> list, T item)
         {

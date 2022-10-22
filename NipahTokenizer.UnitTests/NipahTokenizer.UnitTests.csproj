@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
+    <LangVersion>11</LangVersion>
+
     <IsPackable>false</IsPackable>
 
     <Platforms>AnyCPU;X64</Platforms>

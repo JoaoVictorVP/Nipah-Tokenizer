@@ -7,6 +7,35 @@ namespace NipahTokenizer.UnitTests;
 public class NipahTokenizerTests
 {
     [Fact]
+    public void TokenizeWithAggregators()
+    {
+        // Arrange
+        var options = new TokenizerOptions(
+            TokenizerOptions.DefaultSeparators,
+            TokenizerOptions.DefaultScopes,
+            TokenizerOptions.DefaultEndOfLines,
+            new[]
+            {
+                new SplitAggregator("?", ":")
+            }
+        );
+        var tokenizer = new Tokenizer();
+        var text = "[\"fish\"]?:lol";
+
+        // Act
+        var tokens = tokenizer.Tokenize(text, options);
+
+        // Assert
+        tokens.Should().HaveCount(5);
+        (tokens switch
+        {
+            [{ Type: TokenType.OpenSquares }, { Type: TokenType.StringLiteral }, { Type: TokenType.CloseSquares },
+            { Text: "?:" }, { Text: "lol" }] => true,
+            _ => false
+        }).Should().BeTrue();
+    }
+
+    [Fact]
     public void TokenizeSimpleEntry()
     {
         // Arrange
