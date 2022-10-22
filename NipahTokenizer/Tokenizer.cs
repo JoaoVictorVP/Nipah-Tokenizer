@@ -469,14 +469,36 @@ namespace NipahTokenizer
             return true;
         }
     }
+    /// <summary>
+    /// Represents an pre-token that wasnt further processed yet
+    /// </summary>
     public readonly struct SplitItem
     {
+        /// <summary>
+        /// The text contents
+        /// </summary>
         public readonly string text;
+        /// <summary>
+        /// The line position
+        /// </summary>
         public readonly int position;
+        /// <summary>
+        /// The line in text
+        /// </summary>
         public readonly int line;
 
+        /// <summary>
+        /// Converts implicitly to string by resolving to <see cref="text"/>
+        /// </summary>
+        /// <param name="item"></param>
         public static implicit operator string(SplitItem item) => item.text;
 
+        /// <summary>
+        /// Sums current split item with other to produce complex aggregations
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static SplitItem operator +(SplitItem a, SplitItem b)
         {
             var c = new SplitItem(a.text + b.text, a.position > b.position ? a.position : b.position,
@@ -484,6 +506,12 @@ namespace NipahTokenizer
             return c;
         }
 
+        /// <summary>
+        /// Creates a new split item with position-localized text
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="position"></param>
+        /// <param name="line"></param>
         public SplitItem(string text, int position, int line)
         {
             this.text = text;
@@ -491,15 +519,30 @@ namespace NipahTokenizer
             this.line = line;
         }
 
+        /// <summary>
+        /// Get's the string representation of this split item, like:<br />
+        /// "<see cref="text"/>", at (Position: <see cref="position"/>, Line: <see cref="line"/>)
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"\"{text}\", at (Position: {position}, Line: {line})";
         }
     }
+    /// <summary>
+    /// (non-used)
+    /// </summary>
     public struct FinalSplit
     {
         public string result;
     }
+    /// <summary>
+    /// Represents a split processor, a simple pipeline for processing splits into final splits that carries the result (non-used)
+    /// </summary>
+    /// <param name="token"></param>
+    /// <param name="next"></param>
+    /// <param name="result"></param>
+    /// <returns></returns>
     public delegate bool SplitProcessor(SplitItem token, SplitItem next,
                                         out FinalSplit result);
 }

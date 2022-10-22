@@ -13,10 +13,11 @@
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>AnyCPU;X64</Platforms>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup>
-    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Version>3.1.5</Version>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <Title>Nipah Tokenizer</Title>
