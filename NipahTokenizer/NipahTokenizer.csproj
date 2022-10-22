@@ -13,7 +13,6 @@
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>AnyCPU;X64</Platforms>
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup>
