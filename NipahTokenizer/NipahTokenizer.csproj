@@ -9,7 +9,7 @@
     <Description>A strong tokenizer for you needs on C#</Description>
     <PackageIcon>d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>Fixing bug (out of bounds) when applying aggregators to an N(split items)xN(aggregator matchers) list</PackageReleaseNotes>
+    <PackageReleaseNotes>Adding match to Result[T] and TrySolveInstance for DynValue (for specific use cases)</PackageReleaseNotes>
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>AnyCPU;X64</Platforms>
@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Version>3.1.5</Version>
+    <Version>3.1.6</Version>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <Title>Nipah Tokenizer</Title>
     <IncludeSymbols>True</IncludeSymbols>
