@@ -299,6 +299,32 @@ public unsafe struct DynValue
             return new(Solve<T>());
         return Result<T>.None;
     }
+    public Result<object> TrySolveInstance()
+    {
+        return type switch
+        {
+            DynType.U8 => SolveNum<byte, byte>(),
+            DynType.I8 => SolveNum<sbyte, sbyte>(),
+            DynType.Bool => SolveBool<bool>(),
+
+            DynType.I16 => SolveNum<short, short>(),
+            DynType.I32 => SolveNum<int, int>(),
+            DynType.I64 => SolveNum<long, long>(),
+            DynType.U16 => SolveNum<ushort, ushort>(),
+            DynType.U32 => SolveNum<uint, uint>(),
+            DynType.U64 => SolveNum<ulong, ulong>(),
+            DynType.F32 => SolveNum<float, float>(),
+            DynType.F64 => SolveNum<double, double>(),
+
+            DynType.Char => SolveNum<char, char>(),
+
+            DynType.Other => SolveOther<object>(),
+
+            DynType.String or DynType.Ref => new(_ref),
+
+            _ or DynType.Null => Result<object>.None
+        };
+    }
     DynType FromT<T>()
     {
         var t = typeof(T);

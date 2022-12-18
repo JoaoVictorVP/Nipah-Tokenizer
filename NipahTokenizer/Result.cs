@@ -16,6 +16,17 @@ public struct Result<T>
     public T? Solve() => valid ? value! : default;
     public T Solve(T defaultValue) => valid ? value! : defaultValue;
 
+    public void Match(Action<T> whenValid, Action whenInvalid)
+    {
+        if (valid)
+            whenValid(value!);
+        else
+            whenInvalid();
+    }
+    
+    public TOutput Match<TOutput>(Func<T, TOutput> whenValid, Func<TOutput> whenInvalid)
+        => valid ? whenValid(value!) : whenInvalid();
+
     public Result(T value)
     {
         this.value = value;
