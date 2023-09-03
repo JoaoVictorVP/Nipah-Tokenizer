@@ -161,27 +161,26 @@ namespace NipahTokenizer
 						value = text;
 						goto end;
 					}
-					int integer;
-					if (int.TryParse(text, out integer))
+                    if (long.TryParse(text, out long integer))
+                    {
+                        type = TokenType.IntegerLiteral;
+                        value = integer;
+                        goto end;
+                    }
+                    double doubleVal;
+					if (text[^1] == 'f')
 					{
-						type = TokenType.IntegerLiteral;
-						value = integer;
-						goto end;
-					}
-					float single;
-					if (text[text.Length - 1] == 'f')
-					{
-						if (float.TryParse(text.Replace('.', ',').Replace("f", ""), out single))
+						if (double.TryParse(text.Replace('.', ',').Replace("f", ""), out doubleVal))
 						{
 							type = TokenType.FloatLiteral;
-							value = single;
+							value = doubleVal;
 							goto end;
 						}
 					}
-					if (float.TryParse(text.Replace('.', ','), out single))
+					if (double.TryParse(text.Replace('.', ','), out doubleVal))
 					{
 						type = TokenType.FloatLiteral;
-						value = single;
+						value = doubleVal;
 						goto end;
 					}
 					char c;
