@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -57,12 +58,44 @@ public record TokenizerOptions(
         new("-", ">"), new("=", ">"),
         new("&", "&"), new("|", "|"),
         // Floating point numbers (like 3.14 or 9,36)
-        new(x => long.TryParse(x, out _), y => y is ".", z => long.TryParse(z, out _)),
+        new SplitAggregator(x => long.TryParse(x, out _), y => y is ".", z => long.TryParse(z, out _))
+            .Named("FloatAggregator"),
         // Negative numbers (like -3000)
-        new(x => x is "-", y => long.TryParse(y, out _) || double.TryParse(y, out _))
+        new SplitAggregator(x => x is "-", y => long.TryParse(y, out _) || double.TryParse(y, out _))
+            .Named("NegativeNumbersAggregator")
     };
 
     public static readonly TokenizerOptions Default = new(DefaultSeparators, DefaultScopes, DefaultEndOfLines, DefaultAggregators, false);
+
+    public static TokenizerOptions BuildDefault(DefaultTokenizerOptions options)
+    {
+        var separators = Array.Empty<S>();
+        if(options.HasFlag(DefaultTokenizerOptions.Separators))
+            separators = DefaultSeparators;
+        var scopes = Array.Empty<Scope>();
+        if(options.HasFlag(DefaultTokenizerOptions.Scopes))
+            scopes = DefaultScopes;
+        var eof = Array.Empty<EndOfLine>();
+        if(options.HasFlag(DefaultTokenizerOptions.EndOfLines))
+            eof = DefaultEndOfLines;
+        var aggregators = Array.Empty<SplitAggregator>();
+        if(options.HasFlag(DefaultTokenizerOptions.Aggregators))
+            aggregators = DefaultAggregators;
+
+        if(options.HasFlag(DefaultTokenizerOptions.SpacesDoSeparate))
+            separators = separators
+                .Where(s => s.Match is not ' ')
+                .Append(new S(' ', IncludeMode.Separate))
+                .ToArray();
+
+        aggregators = (SplitAggregator[])aggregators.Clone();
+        if (options.HasFlag(DefaultTokenizerOptions.IgnoreNegativeNumberAggregators))
+            aggregators = aggregators.Where(aggr => aggr.Name != "NegativeNumbersAggregator").ToArray();
+        if(options.HasFlag(DefaultTokenizerOptions.IgnoreFloatingPointNumberAggregators))
+            aggregators = aggregators.Where(aggr => aggr.Name != "FloatAggregator").ToArray();
+
+        return new(separators, scopes, eof, aggregators, false);
+    }
 }
 
 public class Separator
@@ -127,7 +160,14 @@ public class EndOfLine
 
 public class SplitAggregator
 {
+    public string Name { get; set; } = "Aggregator";
     public readonly Predicate<string>[] Detectors;
+
+    public SplitAggregator Named(string name)
+    {
+        Name = name;
+        return this;
+    }
 
     public SplitAggregator(params Predicate<string>[] detectors)
     {
@@ -138,4 +178,22 @@ public class SplitAggregator
     {
         Detectors = detectors.Select(Predicate<string> (x) => (cmp) => x == cmp).ToArray();
     }
+}
+
+[Flags]
+public enum DefaultTokenizerOptions
+{
+    None = 0,
+    Separators = 1 << 0,
+    Scopes = 1 << 1,
+    EndOfLines = 1 << 2,
+    Aggregators = 1 << 3,
+
+    SpacesDoSeparate = 1 << 4,
+
+    IgnoreNegativeNumberAggregators = 1 << 5,
+
+    IgnoreFloatingPointNumberAggregators = 1 << 6,
+
+    Defaults = Separators | Scopes | EndOfLines | Aggregators
 }

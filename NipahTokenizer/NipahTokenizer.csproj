@@ -9,7 +9,7 @@
     <Description>A strong tokenizer for you needs on C#</Description>
     <PackageIcon>d2x64su-54e0adde-6089-4e94-b204-5fdf61586e0e.jpg</PackageIcon>
     <PackageIconUrl />
-    <PackageReleaseNotes>Tokens now will parse by default integer literals as '64-bit' and floating point number literals also as '64-bit', this should make using them to cast down easier in parsers</PackageReleaseNotes>
+    <PackageReleaseNotes>Adding a function 'BuildDefault' into TokenizerOptions for customizing (kind of) the default options with specs like ignoring negative number aggregators or to consider spaces as tokens instead of ignoring them</PackageReleaseNotes>
     <LangVersion>10</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>AnyCPU;X64</Platforms>
@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Version>3.1.7</Version>
+    <Version>3.1.8</Version>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <Title>Nipah Tokenizer</Title>
     <IncludeSymbols>True</IncludeSymbols>

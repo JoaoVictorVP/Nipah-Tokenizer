@@ -131,4 +131,49 @@ Life is truly great!";
         // Assert
         tokens.Select(x => x.Text).Should().BeEquivalentTo(new[] { "This", "is", "'a good'", "and", "highly", "tokenizable", @"""text with ""smart"" scopes""", "!" });
     }
+
+    [Fact]
+    public void TokenizeWithCustomDefaultOptions_NoNegativeNumbers()
+    {
+        // Arrange
+        var options = TokenizerOptions.BuildDefault(DefaultTokenizerOptions.Defaults | DefaultTokenizerOptions.IgnoreNegativeNumberAggregators);
+        var tokenizer = new Tokenizer();
+        string sample = @"-1";
+
+        // Act
+        var tokens = tokenizer.Tokenize(sample, options);
+
+        // Assert
+        tokens.Select(x => x.Text).Should().BeEquivalentTo(new[] { "-", "1" });
+    }
+
+    [Fact]
+    public void TokenizeWithCustomDefaultOptions_NoFloatingNumbers()
+    {
+        // Arrange
+        var options = TokenizerOptions.BuildDefault(DefaultTokenizerOptions.Defaults | DefaultTokenizerOptions.IgnoreFloatingPointNumberAggregators);
+        var tokenizer = new Tokenizer();
+        string sample = @"1.0";
+
+        // Act
+        var tokens = tokenizer.Tokenize(sample, options);
+
+        // Assert
+        tokens.Select(x => x.Text).Should().BeEquivalentTo(new[] { "1", ".", "0" });
+    }
+
+    [Fact]
+    public void TokenizeWithCustomDefaultOptions_SpacesAreSeparatedTokens()
+    {
+        // Arrange
+        var options = TokenizerOptions.BuildDefault(DefaultTokenizerOptions.Defaults | DefaultTokenizerOptions.SpacesDoSeparate);
+        var tokenizer = new Tokenizer();
+        string sample = @"Hello World!";
+
+        // Act
+        var tokens = tokenizer.Tokenize(sample, options);
+
+        // Assert
+        tokens.Select(x => x.Text).Should().BeEquivalentTo(new[] { "Hello", " ", "World", "!" });
+    }
 }
